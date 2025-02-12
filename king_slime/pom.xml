@@ -25,11 +25,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <version>21</version>
-</dependency>
+      
     </dependencies>
   </dependencyManagement>
 
@@ -45,6 +41,11 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+        <groupId>com.github.almasb</groupId>
+      <artifactId>fxgl</artifactId>
+      <version>21.1</version>
+</dependency>
   </dependencies>
 
   <build>
