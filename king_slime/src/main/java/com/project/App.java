@@ -23,7 +23,7 @@ public class App extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
-        settings.setHeight(840);
+        settings.setHeight(832);
         settings.setTitle("King Slime Adventure");
         settings.setVersion("0.1");
         settings.setMainMenuEnabled(true);
