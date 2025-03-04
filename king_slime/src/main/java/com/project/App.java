@@ -4,6 +4,8 @@ import java.util.Map;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.input.UserAction;
 
@@ -27,6 +29,12 @@ public class App extends GameApplication {
         settings.setTitle("King Slime Adventure");
         settings.setVersion("0.1");
         settings.setMainMenuEnabled(true);
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new MainMenu();
+            }
+        });
     }
 
     @Override
