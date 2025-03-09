@@ -60,6 +60,10 @@ public class Player {
         }
     }
 
+    public void setSpeed(double speed) {
+        this.playerSpeed = speed; // เพิ่มเมธอด setSpeed
+    }
+
     public Entity getEntity() {
         return player;
     }

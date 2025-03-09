@@ -1,10 +1,12 @@
 package com.project;
 
+import java.util.function.BiConsumer;
+
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
+
 import javafx.util.Duration;
-import java.util.function.BiConsumer;
 
 public class PhysicsManager {
     private boolean isShieldActive = false;
@@ -18,11 +20,10 @@ public class PhysicsManager {
 
     public void init() {
         addPhysics(EntityType.PLAYER, EntityType.ENEMY, this::Enemy);
-        /*
-         * addCollisionHandler(EntityType.PLAYER, EntityType.POTION, this::Potion);
-         * addCollisionHandler(EntityType.PLAYER, EntityType.MEAT, this::Meat);
-         * addCollisionHandler(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
-         */
+        addPhysics(EntityType.PLAYER, EntityType.POTION, this::Potion);
+        // addCollisionHandler(EntityType.PLAYER, EntityType.MEAT, this::Meat);
+        // addCollisionHandler(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
+
     }
 
     private void addPhysics(EntityType typeA, EntityType typeB, BiConsumer<Entity, Entity> handler) {
@@ -46,11 +47,11 @@ public class PhysicsManager {
         }
     }
 
-    /* private void Potion(Entity player, Entity potion) {
+    private void Potion(Entity player, Entity potion) {
         if (player.getPosition().distance(potion.getPosition()) < 30) {
             potion.removeFromWorld();
             if (potionTimer == 0) {
-                playerSpeed += 0.5;
+                this.player.setSpeed(this.playerSpeed + 0.5);
             }
             potionTimer += 5;
             FXGL.set("potionTime", potionTimer);
@@ -59,19 +60,20 @@ public class PhysicsManager {
                 potionTimer--;
                 FXGL.set("potionTime", potionTimer);
                 if (potionTimer <= 0)
-                    playerSpeed = Math.max(1.0, playerSpeed - 0.5);
+                this.player.setSpeed(Math.max(1.0, this.playerSpeed - 0.5));
             }, Duration.seconds(1), 5);
         }
     }
 
-    private void Meat(Entity player, Entity meat) {
+
+    /* private void Meat(Entity player, Entity meat) {
         if ((player.getPosition().distance(meat.getPosition()) < 30)) {
             FXGL.inc("playerHP", 20);
             meat.removeFromWorld();
         }
-    }
+    } */
 
-    private void Shield(Entity player, Entity shield) {
+    /* private void Shield(Entity player, Entity shield) {
         if ((player.getPosition().distance(shield.getPosition()) < 30)) {
             shield.removeFromWorld();
             isShieldActive = true;
@@ -85,4 +87,5 @@ public class PhysicsManager {
             }, Duration.seconds(5));
         }
     } */
+
 }

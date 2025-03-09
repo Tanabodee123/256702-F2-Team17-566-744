@@ -17,6 +17,7 @@ public class App extends GameApplication {
     public static Player player;
     public static Enemy enemy;
     private PhysicsManager physics;
+    private ItemSpawner item;
 
     public static void main(String[] args) {
         launch(args);
@@ -42,8 +43,11 @@ public class App extends GameApplication {
         player = new Player();
         enemy = new Enemy();
         physics = new PhysicsManager(player);
+        item = new ItemSpawner();
+
         player.createPlayer();
         enemy.spawnEnemies(5, player);
+        FXGL.run(() -> item.spawnPotion(),Duration.seconds(8));
 
         FXGL.run(() -> {
             FXGL.inc("score", 1);
@@ -69,6 +73,7 @@ public class App extends GameApplication {
         vars.put("playerHP", 100);
         vars.put("score", 0);
         vars.put("enemyCount", 3);
+        vars.put("potionTime", 0);
     }
 
     @Override
@@ -80,6 +85,7 @@ public class App extends GameApplication {
     protected void initUI() {
         createUILabel("HP:", 30, 80, "playerHP", 65, 80);
         createUILabel("Score:", 30, 50, "score", 75, 50);
+        createUILabel("PotionTime", 30, 110, "potionTime", 105 ,110);
     }
 
     private void createUILabel(String label, double labelX, double labelY, String property, double valueX,
