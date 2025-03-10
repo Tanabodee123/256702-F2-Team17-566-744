@@ -31,6 +31,7 @@ public class App extends GameApplication {
     public static Enemy enemy;
     private PhysicsManager physics;
     private ItemSpawner item;
+    private boolean isShieldActive = false;
     private List<Entity> enemies = new ArrayList<>();
     private AnimationChannel enemyWalk;
 
@@ -65,7 +66,7 @@ public class App extends GameApplication {
         FXGL.run(() -> item.spawnShield(), Duration.seconds(20));
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
-        
+
         FXGL.run(() -> {
             FXGL.inc("score", 1);
         }, Duration.seconds(1));
@@ -83,7 +84,7 @@ public class App extends GameApplication {
         Movement("Move Right", KeyCode.D, 1, 0);
         Movement("Move Up", KeyCode.W, 0, -1);
         Movement("Move Down", KeyCode.S, 0, 1);
-        // SaveLoad(); 
+        SaveLoad(); 
     }
 
     @Override
@@ -92,6 +93,7 @@ public class App extends GameApplication {
         vars.put("score", 0);
         vars.put("enemyCount", 3);
         vars.put("potionTime", 0);
+        FXGL.set("isShieldActive", isShieldActive);
     }
 
     @Override
@@ -103,7 +105,8 @@ public class App extends GameApplication {
     protected void initUI() {
         createUILabel("HP:", 30, 80, "playerHP", 65, 80);
         createUILabel("Score:", 30, 50, "score", 75, 50);
-        createUILabel("PotionTime", 30, 110, "potionTime", 105, 110);
+        createUILabel("Potion Time:", 30, 110, "potionTime", 105, 110);
+        createUILabel("Shield:",30,140,"isShieldActive", 80, 140);
     }
 
     private void createUILabel(String label, double labelX, double labelY, String property, double valueX,
@@ -141,7 +144,7 @@ public class App extends GameApplication {
         }, key);
     }
 
-    /* private void SaveLoad() {
+    private void SaveLoad() {
         FXGL.getInput().addAction(new UserAction("Save Game") {
             @Override
             protected void onActionBegin() {
@@ -163,19 +166,22 @@ public class App extends GameApplication {
         data.potionTimer = FXGL.geti("potionTime");
         data.isShieldActive = FXGL.getb("isShieldActive");
         data.score = FXGL.geti("score");
-
-        // บันทึกตำแหน่งของผู้เล่น
+    
+        // เซฟตำแหน่งของผู้เล่น
         data.playerX = player.getEntity().getX();
         data.playerY = player.getEntity().getY();
-
+    
+        // ดึงศัตรูทั้งหมดจากเกม
+        List<Entity> enemyEntities = FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY);
+        
         // บันทึกตำแหน่งศัตรูทั้งหมด
-        data.enemyPositionsX = enemies.stream()
-                .map(e -> e.getX())
+        data.enemyPositionsX = enemyEntities.stream()
+                .map(Entity::getX)
                 .collect(Collectors.toList());
-        data.enemyPositionsY = enemies.stream()
-                .map(e -> e.getY())
+        data.enemyPositionsY = enemyEntities.stream()
+                .map(Entity::getY)
                 .collect(Collectors.toList());
-
+    
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("savegame.dat"))) {
             oos.writeObject(data);
             FXGL.showMessage("Game Saved!");
@@ -184,59 +190,60 @@ public class App extends GameApplication {
             FXGL.showMessage("Failed to save game.");
         }
     }
+    
 
     private void loadGame() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("savegame.dat"))) {
             SaveData data = (SaveData) ois.readObject();
-
+    
             FXGL.set("playerHP", data.playerHP);
             FXGL.set("potionTime", data.potionTimer);
             FXGL.set("isShieldActive", data.isShieldActive);
             FXGL.set("score", data.score);
-
+    
             // โหลดตำแหน่งผู้เล่น
             player.getEntity().setX(data.playerX);
             player.getEntity().setY(data.playerY);
-
+    
             // ลบศัตรูเก่าทั้งหมดก่อนโหลดใหม่
-            for (Entity e : enemies) {
+            List<Entity> oldEnemies = FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY);
+            for (Entity e : oldEnemies) {
                 e.removeFromWorld();
             }
-            enemies.clear();
-
+    
             // โหลดศัตรูใหม่จากตำแหน่งที่บันทึกไว้
             for (int i = 0; i < data.enemyPositionsX.size(); i++) {
                 spawnEnemyAt(new Point2D(data.enemyPositionsX.get(i), data.enemyPositionsY.get(i)));
             }
-
+    
             FXGL.showMessage("Game Loaded!");
         } catch (Exception e) {
             e.printStackTrace();
             FXGL.showMessage("Failed to load game.");
         }
     }
+    
 
     private void spawnEnemyAt(Point2D position) {
         int frameWidth = 64;
         int frameHeight = 64;
         int framesPerRow = 8;
-
-        Image image = FXGL.image("Slime3_Walk_full.png");
+    
+        Image image = FXGL.image("Slime3.png");
         enemyWalk = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(0.5), 1, 7);
-
+    
         AnimatedTexture enemyTexture = new AnimatedTexture(enemyWalk);
         enemyTexture.loop();
-
+    
         Entity enemy = FXGL.entityBuilder()
                 .at(position)
                 .type(EntityType.ENEMY)
                 .viewWithBBox(enemyTexture)
-                .with(new EnemyComponent(player)) // ✅ ใช้ EnemyComponent
-                .with(new CollidableComponent(true)) // ✅ ทำให้ชนกับวัตถุอื่นได้
+                .with(new CollidableComponent(true))
+                .with(new EnemyComponent(player.getEntity())) // ✅ ใช้ player.getEntity()
                 .buildAndAttach();
-
-        enemy.setScaleX(1);
+    
         enemies.add(enemy);
-    } */
-
+    }
+    
 }

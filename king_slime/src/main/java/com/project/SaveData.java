@@ -11,8 +11,9 @@ public class SaveData implements Serializable {
     public boolean isShieldActive;
     public int score;
 
-    // ใช้ค่าตัวเลขแทน Point2D
-    public double playerX, playerY;
+    public double playerX;
+    public double playerY;
+
     public List<Double> enemyPositionsX;
     public List<Double> enemyPositionsY;
 }
