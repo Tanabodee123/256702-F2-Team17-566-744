@@ -22,7 +22,7 @@ public class PhysicsManager {
         addPhysics(EntityType.PLAYER, EntityType.ENEMY, this::Enemy);
         addPhysics(EntityType.PLAYER, EntityType.POTION, this::Potion);
         addPhysics(EntityType.PLAYER, EntityType.MEAT, this::Meat);
-        // addCollisionHandler(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
+        addPhysics(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
 
     }
 
@@ -73,7 +73,7 @@ public class PhysicsManager {
         }
     }
 
-    /* private void Shield(Entity player, Entity shield) {
+    private void Shield(Entity player, Entity shield) {
         if ((player.getPosition().distance(shield.getPosition()) < 30)) {
             shield.removeFromWorld();
             isShieldActive = true;
@@ -86,6 +86,6 @@ public class PhysicsManager {
                 FXGL.showMessage("Shield Expired!");
             }, Duration.seconds(5));
         }
-    } */
+    }
 
 }

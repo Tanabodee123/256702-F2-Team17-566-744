@@ -15,9 +15,9 @@ public class ItemSpawner {
 
     private Random random = new Random();
 
-    /* public void spawnShield() {
+    public void spawnShield() {
         spawnItem(EntityType.SHIELD, "shield.png");
-    } */
+    } 
 
     public void spawnPotion() {
         spawnItem(EntityType.POTION, "potion.png");

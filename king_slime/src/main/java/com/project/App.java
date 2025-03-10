@@ -62,6 +62,7 @@ public class App extends GameApplication {
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);
+        FXGL.run(() -> item.spawnShield(), Duration.seconds(20));
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
         
