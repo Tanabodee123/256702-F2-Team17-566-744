@@ -1,5 +1,6 @@
 package com.project;
 
+import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.util.Duration;
 import com.almasb.fxgl.texture.AnimatedTexture;
@@ -7,6 +8,8 @@ import com.almasb.fxgl.texture.AnimationChannel;
 import javafx.scene.image.Image;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.profile.DataFile;
+
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
@@ -80,19 +83,34 @@ public class Enemy {
             }
         }
     }
-    /*    public double getX() {
-        return x;
+public void saveEnemies(DataFile data) {
+    Bundle bundle = new Bundle("enemyData");
+    
+    for (int i = 0; i < enemies.size(); i++) {
+        Entity enemyEntity = enemies.get(i);
+        Point2D enemyPos = enemyEntity.getPosition();
+        bundle.put("enemyX" + i, enemyPos.getX());
+        bundle.put("enemyY" + i, enemyPos.getY());
     }
+    
+    data.putBundle(bundle);
+}
+public void loadEnemies(DataFile data, Player player) {
+    Bundle bundle = data.getBundle("enemyData");
 
-    public void setX(double x) {
-        this.x = x;
+    for (int i = 0; bundle.exists("enemyX" + i); i++) {
+        double enemyX = bundle.get("enemyX" + i);
+        double enemyY = bundle.get("enemyY" + i);
+
+        AnimatedTexture enemyTexture = new AnimatedTexture(enemyIdle);
+        Entity enemyEntity = FXGL.entityBuilder()
+                .at(enemyX, enemyY)
+                .type(EntityType.ENEMY)
+                .viewWithBBox(enemyTexture)
+                .with(new CollidableComponent(true))
+                .buildAndAttach();
+        enemies.add(enemyEntity);
     }
+}
 
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    } */
 }

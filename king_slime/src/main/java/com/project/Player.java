@@ -1,5 +1,6 @@
 package com.project;
 
+import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.util.Duration;
 import com.almasb.fxgl.texture.AnimatedTexture;
@@ -7,6 +8,7 @@ import com.almasb.fxgl.texture.AnimationChannel;
 import javafx.scene.image.Image;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.profile.DataFile;
 
 public class Player {
     private Entity player;
@@ -67,5 +69,23 @@ public class Player {
     public Entity getEntity() {
         return player;
     }
+    public void savePlayer(DataFile data) {
+    Bundle bundle = new Bundle("playerData");
+
+    // บันทึกตำแหน่งผู้เล่น
+    double playerX = player.getX();
+    double playerY = player.getY();
+    bundle.put("playerX", playerX);
+    bundle.put("playerY", playerY);
+
+    data.putBundle(bundle);
+}
+public void loadPlayer(DataFile data) {
+    Bundle bundle = data.getBundle("playerData");
+
+    double playerX = bundle.get("playerX");
+    double playerY = bundle.get("playerY");
+    player.setPosition(playerX, playerY);
+}
 
 }
