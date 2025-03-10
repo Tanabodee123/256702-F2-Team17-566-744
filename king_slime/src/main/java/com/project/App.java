@@ -1,14 +1,27 @@
 package com.project;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.texture.AnimatedTexture;
+import com.almasb.fxgl.texture.AnimationChannel;
 
+import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -18,6 +31,8 @@ public class App extends GameApplication {
     public static Enemy enemy;
     private PhysicsManager physics;
     private ItemSpawner item;
+    private List<Entity> enemies = new ArrayList<>();
+    private AnimationChannel enemyWalk;
 
     public static void main(String[] args) {
         launch(args);
@@ -47,8 +62,9 @@ public class App extends GameApplication {
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);
-        FXGL.run(() -> item.spawnPotion(),Duration.seconds(8));
-
+        FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
+        FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
+        
         FXGL.run(() -> {
             FXGL.inc("score", 1);
         }, Duration.seconds(1));
@@ -66,6 +82,7 @@ public class App extends GameApplication {
         Movement("Move Right", KeyCode.D, 1, 0);
         Movement("Move Up", KeyCode.W, 0, -1);
         Movement("Move Down", KeyCode.S, 0, 1);
+        // SaveLoad(); 
     }
 
     @Override
@@ -85,7 +102,7 @@ public class App extends GameApplication {
     protected void initUI() {
         createUILabel("HP:", 30, 80, "playerHP", 65, 80);
         createUILabel("Score:", 30, 50, "score", 75, 50);
-        createUILabel("PotionTime", 30, 110, "potionTime", 105 ,110);
+        createUILabel("PotionTime", 30, 110, "potionTime", 105, 110);
     }
 
     private void createUILabel(String label, double labelX, double labelY, String property, double valueX,
@@ -122,4 +139,103 @@ public class App extends GameApplication {
             }
         }, key);
     }
+
+    /* private void SaveLoad() {
+        FXGL.getInput().addAction(new UserAction("Save Game") {
+            @Override
+            protected void onActionBegin() {
+                saveGame();
+            }
+        }, KeyCode.F);
+    
+        FXGL.getInput().addAction(new UserAction("Load Game") {
+            @Override
+            protected void onActionBegin() {
+                loadGame();
+            }
+        }, KeyCode.G);
+    }
+
+    private void saveGame() {
+        SaveData data = new SaveData();
+        data.playerHP = FXGL.geti("playerHP");
+        data.potionTimer = FXGL.geti("potionTime");
+        data.isShieldActive = FXGL.getb("isShieldActive");
+        data.score = FXGL.geti("score");
+
+        // บันทึกตำแหน่งของผู้เล่น
+        data.playerX = player.getEntity().getX();
+        data.playerY = player.getEntity().getY();
+
+        // บันทึกตำแหน่งศัตรูทั้งหมด
+        data.enemyPositionsX = enemies.stream()
+                .map(e -> e.getX())
+                .collect(Collectors.toList());
+        data.enemyPositionsY = enemies.stream()
+                .map(e -> e.getY())
+                .collect(Collectors.toList());
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("savegame.dat"))) {
+            oos.writeObject(data);
+            FXGL.showMessage("Game Saved!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            FXGL.showMessage("Failed to save game.");
+        }
+    }
+
+    private void loadGame() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("savegame.dat"))) {
+            SaveData data = (SaveData) ois.readObject();
+
+            FXGL.set("playerHP", data.playerHP);
+            FXGL.set("potionTime", data.potionTimer);
+            FXGL.set("isShieldActive", data.isShieldActive);
+            FXGL.set("score", data.score);
+
+            // โหลดตำแหน่งผู้เล่น
+            player.getEntity().setX(data.playerX);
+            player.getEntity().setY(data.playerY);
+
+            // ลบศัตรูเก่าทั้งหมดก่อนโหลดใหม่
+            for (Entity e : enemies) {
+                e.removeFromWorld();
+            }
+            enemies.clear();
+
+            // โหลดศัตรูใหม่จากตำแหน่งที่บันทึกไว้
+            for (int i = 0; i < data.enemyPositionsX.size(); i++) {
+                spawnEnemyAt(new Point2D(data.enemyPositionsX.get(i), data.enemyPositionsY.get(i)));
+            }
+
+            FXGL.showMessage("Game Loaded!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            FXGL.showMessage("Failed to load game.");
+        }
+    }
+
+    private void spawnEnemyAt(Point2D position) {
+        int frameWidth = 64;
+        int frameHeight = 64;
+        int framesPerRow = 8;
+
+        Image image = FXGL.image("Slime3_Walk_full.png");
+        enemyWalk = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(0.5), 1, 7);
+
+        AnimatedTexture enemyTexture = new AnimatedTexture(enemyWalk);
+        enemyTexture.loop();
+
+        Entity enemy = FXGL.entityBuilder()
+                .at(position)
+                .type(EntityType.ENEMY)
+                .viewWithBBox(enemyTexture)
+                .with(new EnemyComponent(player)) // ✅ ใช้ EnemyComponent
+                .with(new CollidableComponent(true)) // ✅ ทำให้ชนกับวัตถุอื่นได้
+                .buildAndAttach();
+
+        enemy.setScaleX(1);
+        enemies.add(enemy);
+    } */
+
 }

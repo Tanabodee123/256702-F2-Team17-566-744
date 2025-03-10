@@ -41,17 +41,16 @@ public class Player {
     }
 
     public void movePlayer(int dx, int dy) {
-        player.translateX(dx * playerSpeed);
-        player.translateY(dy * playerSpeed);
+        player.translate(dx * playerSpeed, dy * playerSpeed);
 
         if (!isMoving) {
             texture.loopAnimationChannel(animWalk);
             isMoving = true;
         }
-        if (dx < 0) {
-            player.setScaleX(1);
-        } else if (dx > 0) {
-            player.setScaleX(-1);
+        
+        
+        if (dx != 0) {
+            player.setScaleX(Math.signum(dx));
         }
     }
 
@@ -63,29 +62,30 @@ public class Player {
     }
 
     public void setSpeed(double speed) {
-        this.playerSpeed = speed; // เพิ่มเมธอด setSpeed
+        this.playerSpeed = speed;
     }
 
     public Entity getEntity() {
         return player;
     }
+
     public void savePlayer(DataFile data) {
-    Bundle bundle = new Bundle("playerData");
+        Bundle bundle = new Bundle("playerData");
 
-    // บันทึกตำแหน่งผู้เล่น
-    double playerX = player.getX();
-    double playerY = player.getY();
-    bundle.put("playerX", playerX);
-    bundle.put("playerY", playerY);
+        // บันทึกตำแหน่งผู้เล่น
+        double playerX = player.getTransformComponent().getX();
+        double playerY = player.getTransformComponent().getY();
+        bundle.put("playerX", playerX);
+        bundle.put("playerY", playerY);
 
-    data.putBundle(bundle);
-}
-public void loadPlayer(DataFile data) {
-    Bundle bundle = data.getBundle("playerData");
+        data.putBundle(bundle);
+    }
 
-    double playerX = bundle.get("playerX");
-    double playerY = bundle.get("playerY");
-    player.setPosition(playerX, playerY);
-}
+    public void loadPlayer(DataFile data) {
+        Bundle bundle = data.getBundle("playerData");
 
+        double playerX = bundle.get("playerX");
+        double playerY = bundle.get("playerY");
+        player.getTransformComponent().setPosition(playerX, playerY);
+    }
 }

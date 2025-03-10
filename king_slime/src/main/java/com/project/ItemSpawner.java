@@ -23,9 +23,9 @@ public class ItemSpawner {
         spawnItem(EntityType.POTION, "potion.png");
     }
 
-    /* public void spawnMeat() {
+    public void spawnMeat() {
         spawnItem(EntityType.MEAT, "meat.png");
-    } */
+    }
 
     private void spawnItem(EntityType type, String textureName) {
         Entity item = FXGL.entityBuilder()

@@ -21,7 +21,7 @@ public class PhysicsManager {
     public void init() {
         addPhysics(EntityType.PLAYER, EntityType.ENEMY, this::Enemy);
         addPhysics(EntityType.PLAYER, EntityType.POTION, this::Potion);
-        // addCollisionHandler(EntityType.PLAYER, EntityType.MEAT, this::Meat);
+        addPhysics(EntityType.PLAYER, EntityType.MEAT, this::Meat);
         // addCollisionHandler(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
 
     }
@@ -66,12 +66,12 @@ public class PhysicsManager {
     }
 
 
-    /* private void Meat(Entity player, Entity meat) {
+    private void Meat(Entity player, Entity meat) {
         if ((player.getPosition().distance(meat.getPosition()) < 30)) {
             FXGL.inc("playerHP", 20);
             meat.removeFromWorld();
         }
-    } */
+    }
 
     /* private void Shield(Entity player, Entity shield) {
         if ((player.getPosition().distance(shield.getPosition()) < 30)) {
