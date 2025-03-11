@@ -174,14 +174,11 @@ public class App extends GameApplication {
         data.isShieldActive = FXGL.getb("isShieldActive");
         data.score = FXGL.geti("score");
     
-        // เซฟตำแหน่งของผู้เล่น
         data.playerX = player.getEntity().getX();
         data.playerY = player.getEntity().getY();
     
-        // ดึงศัตรูทั้งหมดจากเกม
         List<Entity> enemyEntities = FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY);
         
-        // บันทึกตำแหน่งศัตรูทั้งหมด
         data.enemyPositionsX = enemyEntities.stream()
                 .map(Entity::getX)
                 .collect(Collectors.toList());
@@ -208,17 +205,14 @@ public class App extends GameApplication {
             FXGL.set("isShieldActive", data.isShieldActive);
             FXGL.set("score", data.score);
     
-            // โหลดตำแหน่งผู้เล่น
             player.getEntity().setX(data.playerX);
             player.getEntity().setY(data.playerY);
     
-            // ลบศัตรูเก่าทั้งหมดก่อนโหลดใหม่
             List<Entity> oldEnemies = FXGL.getGameWorld().getEntitiesByType(EntityType.ENEMY);
             for (Entity e : oldEnemies) {
                 e.removeFromWorld();
             }
     
-            // โหลดศัตรูใหม่จากตำแหน่งที่บันทึกไว้
             for (int i = 0; i < data.enemyPositionsX.size(); i++) {
                 spawnEnemyAt(new Point2D(data.enemyPositionsX.get(i), data.enemyPositionsY.get(i)));
             }
@@ -247,7 +241,7 @@ public class App extends GameApplication {
                 .type(EntityType.ENEMY)
                 .viewWithBBox(enemyTexture)
                 .with(new CollidableComponent(true))
-                .with(new EnemyComponent(player.getEntity())) // ✅ ใช้ player.getEntity()
+                .with(new EnemyComponent(player.getEntity()))
                 .buildAndAttach();
     
         enemies.add(enemy);
