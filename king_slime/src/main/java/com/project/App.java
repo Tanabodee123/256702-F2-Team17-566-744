@@ -26,6 +26,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import com.almasb.fxgl.audio.Music;
+import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
+import static com.almasb.fxgl.dsl.FXGL.getAudioPlayer;
+
+
 public class App extends GameApplication {
     public static Player player;
     public static Enemy enemy;
@@ -47,10 +52,7 @@ public class App extends GameApplication {
         settings.setVersion("0.1");
         settings.setMainMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
-            @Override
-            public FXGLMenu newMainMenu() {
-                return new MainMenu();
-            }
+            
         });
     }
 
@@ -60,6 +62,11 @@ public class App extends GameApplication {
         enemy = new Enemy();
         physics = new PhysicsManager(player);
         item = new ItemSpawner();
+        FXGL.getSettings().setGlobalSoundVolume(2.0);
+        FXGL.runOnce(() -> {
+            Music backgroundMusic = getAssetLoader().loadMusic("BGM.mp3");
+            getAudioPlayer().loopMusic(backgroundMusic);
+        }, Duration.seconds(1));
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);

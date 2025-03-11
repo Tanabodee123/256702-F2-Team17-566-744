@@ -37,11 +37,14 @@ public class PhysicsManager {
 
     private void Enemy(Entity player, Entity enemy) {
         if (isShieldActive && player.getPosition().distance(enemy.getPosition()) < 15) {
+            FXGL.play("generic-metallic-sound-1-94328.wav");
             enemy.removeFromWorld();
         } else if (player.getPosition().distance(enemy.getPosition()) < 15) {
+            FXGL.play("retro-hurt-2-236675.wav");
             FXGL.inc("playerHP", -20);
             enemy.removeFromWorld();
-            if (FXGL.geti("playerHP") <= 0) {
+            if (FXGL.geti("playerHP") <= 0) {          
+                FXGL.play("deatsound.wav");
                 FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
             }
         }
@@ -49,6 +52,7 @@ public class PhysicsManager {
 
     private void Potion(Entity player, Entity potion) {
         if (player.getPosition().distance(potion.getPosition()) < 30) {
+            FXGL.play("item-pick-up-38258.wav");
             potion.removeFromWorld();
             if (potionTimer == 0) {
                 this.player.setSpeed(this.playerSpeed + 0.5);
@@ -68,6 +72,7 @@ public class PhysicsManager {
 
     private void Meat(Entity player, Entity meat) {
         if ((player.getPosition().distance(meat.getPosition()) < 30)) {
+            FXGL.play("item-pick-up-38258.wav");
             FXGL.inc("playerHP", 20);
             meat.removeFromWorld();
         }
@@ -75,6 +80,7 @@ public class PhysicsManager {
 
     private void Shield(Entity player, Entity shield) {
         if ((player.getPosition().distance(shield.getPosition()) < 30)) {
+            FXGL.play("item-pick-up-38258.wav");
             shield.removeFromWorld();
             isShieldActive = true;
             FXGL.set("isShieldActive", true);
