@@ -18,7 +18,7 @@
 
     public class Enemy {
         private AnimationChannel enemyIdle, enemyWalk;
-        private double enemySpeed = 1.5;
+        private double enemySpeed = 1.7;
         private Random random = new Random();
         private List<Entity> enemies = new ArrayList<>();
 
@@ -98,21 +98,18 @@
         }
         
         public void loadEnemies(DataFile data, Player player) {
-            // ลบศัตรูเก่าที่มีอยู่ก่อนที่จะโหลดใหม่
+            
             clearEnemies();
         
             Bundle bundle = data.getBundle("enemyData");
         
-            // ตรวจสอบและโหลดข้อมูลของศัตรูทั้งหมด
             int i = 0;
             while (bundle.exists("enemyX" + i)) {
                 double enemyX = bundle.get("enemyX" + i);
                 double enemyY = bundle.get("enemyY" + i);
         
-                // สร้าง AnimatedTexture สำหรับศัตรู
                 AnimatedTexture enemyTexture = new AnimatedTexture(enemyIdle);
         
-                // สร้างศัตรูใหม่ในตำแหน่งที่โหลด
                 Entity enemy = FXGL.entityBuilder()
                         .at(enemyX, enemyY)
                         .type(EntityType.ENEMY)
@@ -120,26 +117,23 @@
                         .with(new CollidableComponent(true))
                         .buildAndAttach();
         
-                // เพิ่มศัตรูใหม่ในลิสต์
                 enemies.add(enemy);
         
-                // พิมพ์ตำแหน่งของศัตรูที่โหลด
                 System.out.println("Enemy " + i + " Position Loaded: " + enemy.getPosition());
         
-                // ให้ศัตรูตามผู้เล่น
                 FXGL.getGameTimer().runAtInterval(() -> {
                     followPlayer(enemy, enemyTexture, player);
                 }, Duration.seconds(0.02));
         
-                i++;  // เพิ่มค่า i สำหรับศัตรูตัวถัดไป
+                i++;
             }
         }
         
     public void clearEnemies() {
         for (Entity enemy : enemies) {
-            enemy.removeFromWorld();  // ลบศัตรูออกจากโลก
+            enemy.removeFromWorld();
         }
-        enemies.clear();  // ล้างลิสต์ศัตรู
+        enemies.clear();
         System.out.println("Enemies cleared");
     }
     

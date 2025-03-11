@@ -6,12 +6,13 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
 
+import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 public class PhysicsManager {
     private boolean isShieldActive = false;
     private int potionTimer = 0;
-    private double playerSpeed = 1.0;
+    private double maxSpeed = 3.0;
     private Player player;
 
     public PhysicsManager(Player player) {
@@ -37,7 +38,8 @@ public class PhysicsManager {
 
     private void Enemy(Entity player, Entity enemy) {
         if (isShieldActive && player.getPosition().distance(enemy.getPosition()) < 15) {
-            enemy.removeFromWorld();
+            Point2D knockback = enemy.getPosition().subtract(player.getPosition()).normalize().multiply(100);
+            enemy.translate(knockback);
         } else if (player.getPosition().distance(enemy.getPosition()) < 15) {
             FXGL.inc("playerHP", -20);
             enemy.removeFromWorld();
@@ -47,24 +49,29 @@ public class PhysicsManager {
         }
     }
 
-    private void Potion(Entity player, Entity potion) {
+    private void Potion(Entity player, Entity potion) { 
         if (player.getPosition().distance(potion.getPosition()) < 30) {
             potion.removeFromWorld();
+
             if (potionTimer == 0) {
-                this.player.setSpeed(this.playerSpeed + 0.5);
+                double newSpeed = Math.min(this.player.getSpeed() + 0.5, maxSpeed); 
+                this.player.setSpeed(newSpeed);
             }
+
             potionTimer += 5;
             FXGL.set("potionTime", potionTimer);
 
             FXGL.run(() -> {
                 potionTimer--;
                 FXGL.set("potionTime", potionTimer);
-                if (potionTimer <= 0)
-                this.player.setSpeed(Math.max(1.0, this.playerSpeed - 0.5));
+
+                if (potionTimer <= 0) {
+                    double newSpeed = Math.max(1.0, this.player.getSpeed() - 0.5);
+                    this.player.setSpeed(newSpeed);
+                }
             }, Duration.seconds(1), 5);
         }
     }
-
 
     private void Meat(Entity player, Entity meat) {
         if ((player.getPosition().distance(meat.getPosition()) < 30)) {

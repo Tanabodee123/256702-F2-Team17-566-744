@@ -6,7 +6,7 @@ import javafx.geometry.Point2D;
 
 public class EnemyComponent extends Component {
     private Entity player;
-    private double speed = 50; // ปรับความเร็ว
+    private double speed = 70;
 
     public EnemyComponent(Entity player) {
         this.player = player;
@@ -16,7 +16,6 @@ public class EnemyComponent extends Component {
     public void onUpdate(double tpf) {
         if (player == null) return;
 
-        // เคลื่อนที่ไปยังตำแหน่งผู้เล่น
         Point2D playerPos = player.getPosition();
         Point2D enemyPos = entity.getPosition();
         Point2D direction = playerPos.subtract(enemyPos).normalize();

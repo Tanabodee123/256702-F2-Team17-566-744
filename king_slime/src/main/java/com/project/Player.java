@@ -12,7 +12,7 @@ import com.almasb.fxgl.profile.DataFile;
 
 public class Player {
     private Entity player;
-    private double playerSpeed = 1.0;
+    private double playerSpeed = 2.5;
     private boolean isMoving = false;
     private AnimationChannel animIdle, animWalk;
     private AnimatedTexture texture;
@@ -50,7 +50,7 @@ public class Player {
         
         
         if (dx != 0) {
-            player.setScaleX(Math.signum(dx));
+            player.setScaleX(dx > 0 ? -1 : 1);
         }
     }
 
@@ -63,6 +63,10 @@ public class Player {
 
     public void setSpeed(double speed) {
         this.playerSpeed = speed;
+    }
+
+    public double getSpeed() {
+        return playerSpeed;
     }
 
     public Entity getEntity() {
