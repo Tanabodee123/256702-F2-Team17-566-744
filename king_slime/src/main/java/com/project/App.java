@@ -52,7 +52,10 @@ public class App extends GameApplication {
         settings.setVersion("0.1");
         settings.setMainMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
-            
+            @Override
+            public FXGLMenu newMainMenu() {
+                return new MainMenu();
+            }
         });
     }
 
@@ -60,13 +63,16 @@ public class App extends GameApplication {
     protected void initGame() {
         player = new Player();
         enemy = new Enemy();
-        physics = new PhysicsManager(player);
+        physics =new PhysicsManager(player);
         item = new ItemSpawner();
-        FXGL.getSettings().setGlobalSoundVolume(2.0);
+
+        getAudioPlayer().stopAllMusic();
+        FXGL.getSettings().setGlobalSoundVolume(0.5);
+        FXGL.getSettings().setGlobalMusicVolume(0.5);
         FXGL.runOnce(() -> {
             Music backgroundMusic = getAssetLoader().loadMusic("BGM.mp3");
             getAudioPlayer().loopMusic(backgroundMusic);
-        }, Duration.seconds(1));
+        }, Duration.seconds(0.1));
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);
@@ -101,6 +107,7 @@ public class App extends GameApplication {
         vars.put("enemyCount", 3);
         vars.put("potionTime", 0);
         FXGL.set("isShieldActive", isShieldActive);
+        vars.put("volume", 1.0);
     }
 
     @Override

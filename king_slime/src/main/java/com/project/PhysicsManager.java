@@ -24,7 +24,6 @@ public class PhysicsManager {
         addPhysics(EntityType.PLAYER, EntityType.POTION, this::Potion);
         addPhysics(EntityType.PLAYER, EntityType.MEAT, this::Meat);
         addPhysics(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
-
     }
 
     private void addPhysics(EntityType typeA, EntityType typeB, BiConsumer<Entity, Entity> handler) {
@@ -38,16 +37,16 @@ public class PhysicsManager {
 
     private void Enemy(Entity player, Entity enemy) {
         if (isShieldActive && player.getPosition().distance(enemy.getPosition()) < 15) {
-            FXGL.play("generic-metallic-sound-1-94328.wav");
+            FXGL.play("metallic.wav");
             Point2D knockback = enemy.getPosition().subtract(player.getPosition()).normalize().multiply(100);
             enemy.translate(knockback);
-            enemy.removeFromWorld();
         } else if (player.getPosition().distance(enemy.getPosition()) < 15) {
-            FXGL.play("retro-hurt-2-236675.wav");
+            FXGL.play("retrohurt.wav");
             FXGL.inc("playerHP", -20);
             enemy.removeFromWorld();
             if (FXGL.geti("playerHP") <= 0) {          
                 FXGL.play("deatsound.wav");
+                FXGL.getAudioPlayer().stopAllMusic();
                 FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
             }
         }
@@ -55,7 +54,7 @@ public class PhysicsManager {
 
     private void Potion(Entity player, Entity potion) { 
         if (player.getPosition().distance(potion.getPosition()) < 30) {
-            FXGL.play("item-pick-up-38258.wav");
+            FXGL.play("itempickup.wav");
             potion.removeFromWorld();
 
             if (potionTimer == 0) {
@@ -71,8 +70,7 @@ public class PhysicsManager {
                 FXGL.set("potionTime", potionTimer);
 
                 if (potionTimer <= 0) {
-                    double newSpeed = Math.max(1.0, this.player.getSpeed() - 0.5);
-                    this.player.setSpeed(newSpeed);
+                    this.player.setSpeed(2.5);
                 }
             }, Duration.seconds(1), 5);
         }
@@ -80,7 +78,7 @@ public class PhysicsManager {
 
     private void Meat(Entity player, Entity meat) {
         if ((player.getPosition().distance(meat.getPosition()) < 30)) {
-            FXGL.play("item-pick-up-38258.wav");
+            FXGL.play("itempickup.wav");
             FXGL.inc("playerHP", 20);
             meat.removeFromWorld();
         }
@@ -88,7 +86,7 @@ public class PhysicsManager {
 
     private void Shield(Entity player, Entity shield) {
         if ((player.getPosition().distance(shield.getPosition()) < 30)) {
-            FXGL.play("item-pick-up-38258.wav");
+            FXGL.play("itempickup.wav");
             shield.removeFromWorld();
             isShieldActive = true;
             FXGL.set("isShieldActive", true);
