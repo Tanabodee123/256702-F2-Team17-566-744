@@ -2,13 +2,18 @@ package com.project;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
+
+
 
 public class MainMenu extends FXGLMenu {
     private VBox mainMenuBox;
@@ -21,10 +26,15 @@ public class MainMenu extends FXGLMenu {
     public MainMenu() {
         super(MenuType.MAIN_MENU);
         
+        ImageView background = FXGL.texture("Slime_King_Adventure_32bit_Text_Space.png");
+        background.setFitWidth(screenWidth);
+        background.setFitHeight(screenHeight);
+
+        
         createMainMenu();
         createSettingsMenu();
 
-        getContentRoot().getChildren().add(mainMenuBox);
+        getContentRoot().getChildren().addAll(background, mainMenuBox);
     }
 
     private void createMainMenu() {

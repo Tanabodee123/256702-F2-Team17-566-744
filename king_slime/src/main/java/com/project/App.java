@@ -13,6 +13,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -26,9 +27,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import com.almasb.fxgl.audio.Music;
-import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
-import static com.almasb.fxgl.dsl.FXGL.getAudioPlayer;
+
 
 
 public class App extends GameApplication {
@@ -66,13 +65,14 @@ public class App extends GameApplication {
         physics =new PhysicsManager(player);
         item = new ItemSpawner();
 
-        getAudioPlayer().stopAllMusic();
+         FXGL.getAudioPlayer().stopAllMusic();
         FXGL.getSettings().setGlobalSoundVolume(0.5);
         FXGL.getSettings().setGlobalMusicVolume(0.5);
         FXGL.runOnce(() -> {
-            Music backgroundMusic = getAssetLoader().loadMusic("BGM.mp3");
-            getAudioPlayer().loopMusic(backgroundMusic);
+            Music backgroundMusic = FXGL.getAssetLoader().loadMusic("BGM.mp3");
+            FXGL.getAudioPlayer().loopMusic(backgroundMusic);
         }, Duration.seconds(0.1));
+
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);
