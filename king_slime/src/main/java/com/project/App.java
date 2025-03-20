@@ -57,8 +57,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initGame() {
-        String selectedCharacter = FXGL.getWorldProperties().getValue("selectedCharacter");
-        player = new Player(selectedCharacter);
+        player = new Player();
         enemy = new Enemy();
         physics = new PhysicsManager(player);
         item = new ItemSpawner();

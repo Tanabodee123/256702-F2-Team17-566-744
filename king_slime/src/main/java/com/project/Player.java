@@ -4,6 +4,8 @@ import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
@@ -17,23 +19,15 @@ public class Player {
     private boolean isMoving = false;
     private AnimationChannel animIdle, animWalk;
     private AnimatedTexture texture;
-    private String characterName;
 
-    public Player(String character) {
-        this.characterName = character;
-    }
+    public Player() {}
 
     public Entity createPlayer() {
         int frameWidth = 64;
         int frameHeight = 64;
         int framesPerRow = 8;
 
-        Image image;
-        if (characterName.equals("MagmaSlime")) { // ใช้ characterName ที่เก็บไว้
-            image = FXGL.image("Slime3.png");
-        } else {
-            image = FXGL.image("Slime1.png");
-        }
+        Image image = FXGL.image("Slime1.png");
 
         animIdle = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(1), 0, 0);
         animWalk = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(1), 1, 7);
@@ -44,12 +38,18 @@ public class Player {
                 .at(1280 / 2, 840 / 2)
                 .type(EntityType.PLAYER)
                 .viewWithBBox(texture)
+                .bbox(new HitBox("PLAYER_HITBOX", BoundingShape.box(frameWidth, frameHeight)))
                 .with(new CollidableComponent(true))
                 .buildAndAttach();
         return this.player;
     }
 
     public void movePlayer(int dx, int dy) {
+        double newX = player.getX() + dx * playerSpeed;
+    double newY = player.getY() + dy * playerSpeed;
+
+    // ตรวจสอบขอบเขตของหน้าจอ
+    if (newX >= 0 && newX <= 1280 - player.getWidth() && newY >= 0 && newY <= 840 - player.getHeight()) {
         player.translate(dx * playerSpeed, dy * playerSpeed);
 
         if (!isMoving) {
@@ -60,6 +60,7 @@ public class Player {
         if (dx != 0) {
             player.setScaleX(dx > 0 ? -1 : 1);
         }
+    }
     }
 
     public void stopPlayer() {

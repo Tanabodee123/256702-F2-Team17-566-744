@@ -7,7 +7,6 @@ import com.almasb.fxgl.dsl.FXGL;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -16,21 +15,20 @@ import javafx.scene.text.Text;
 public class MainMenu extends FXGLMenu {
     private VBox mainMenuBox;
     private VBox settingsMenuBox;
-    private VBox characterSelection;
     private double screenWidth = 1280;
     private double screenHeight = 840;
     private double menuWidth = 120;
     private double menuHeight = 140;
+    private ImageView background;
 
     public MainMenu() {
         super(MenuType.MAIN_MENU);
-        ImageView background = FXGL.texture("Slime_King_Adventure_32bit_Text_Space.png");
+        background = FXGL.texture("Slime_King_Adventure_32bit_Text_Space.png");
         background.setFitWidth(screenWidth);
         background.setFitHeight(screenHeight);
 
         createMainMenu();
         createSettingsMenu();
-        showCharacterSelectionWindow();
         getContentRoot().getChildren().addAll(background, mainMenuBox);
     }
 
@@ -43,7 +41,7 @@ public class MainMenu extends FXGLMenu {
         gameTitle.setFill(Color.BLACK);
 
         Button btnStart = new Button("Start Game");
-        btnStart.setOnAction(e -> showCharacterSelection());
+        btnStart.setOnAction(e -> fireNewGame());
 
         Button btnSettings = new Button("Settings");
         btnSettings.setOnAction(e -> showSettingsMenu());
@@ -78,49 +76,6 @@ public class MainMenu extends FXGLMenu {
         settingsMenuBox.setTranslateY((screenHeight - menuHeight) / 2);
     }
 
-    private void showCharacterSelectionWindow() {
-    ImageView slime1 = FXGL.texture("slime_cropped.png");
-    ImageView slime2 = FXGL.texture("slime_frame1_resized_cropped.png");
-
-    slime1.setFitWidth(64);
-    slime1.setFitHeight(64);
-    slime2.setFitWidth(64);
-    slime2.setFitHeight(64);
-
-    characterSelection = new VBox(30);
-    characterSelection.setAlignment(Pos.CENTER);
-
-    Text Title = new Text("CharacterSelection");
-    Title.setFont(Font.font("Arial", 36));
-    Title.setFill(Color.BLACK);
-
-    HBox characterButtons = new HBox(20);
-    characterButtons.setAlignment(Pos.CENTER);
-
-    Button btnSlime = new Button();
-    btnSlime.setGraphic(slime1);
-    btnSlime.setOnAction(e -> {
-        FXGL.getWorldProperties().setValue("selectedCharacter", "Slime");
-        FXGL.getGameController().startNewGame();
-    });
-
-    Button btnMagmaSlime = new Button();
-    btnMagmaSlime.setGraphic(slime2);
-    btnMagmaSlime.setOnAction(e -> {
-        FXGL.getWorldProperties().setValue("selectedCharacter", "MagmaSlime");
-        FXGL.getGameController().startNewGame();
-    });
-
-    characterButtons.getChildren().addAll(btnSlime, btnMagmaSlime);
-
-    Button btnBack = new Button("Back");
-    btnBack.setOnAction(e -> showMainMenu());
-
-    characterSelection.getChildren().addAll(Title, characterButtons, btnBack); 
-    characterSelection.setTranslateX((screenWidth - 300) / 2);
-    characterSelection.setTranslateY((screenHeight - 200) / 2);
-}
-
     private void showSettingsMenu() {
         getContentRoot().getChildren().clear();
         getContentRoot().getChildren().add(settingsMenuBox);
@@ -128,12 +83,7 @@ public class MainMenu extends FXGLMenu {
 
     private void showMainMenu() {
         getContentRoot().getChildren().clear();
-        getContentRoot().getChildren().add(mainMenuBox);
-    }
-
-    private void showCharacterSelection() {
-        getContentRoot().getChildren().clear();
-        getContentRoot().getChildren().add(characterSelection);
+        getContentRoot().getChildren().addAll(background, mainMenuBox);
     }
 
     
