@@ -24,10 +24,14 @@ public class MainMenu extends FXGLMenu {
 
     public MainMenu() {
         super(MenuType.MAIN_MENU);
+        ImageView background = FXGL.texture("Slime_King_Adventure_32bit_Text_Space.png");
+        background.setFitWidth(screenWidth);
+        background.setFitHeight(screenHeight);
+
         createMainMenu();
         createSettingsMenu();
         showCharacterSelectionWindow();
-        getContentRoot().getChildren().add(mainMenuBox);
+        getContentRoot().getChildren().addAll(background, mainMenuBox);
     }
 
     private void createMainMenu() {

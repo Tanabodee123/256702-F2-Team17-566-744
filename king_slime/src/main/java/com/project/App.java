@@ -1,8 +1,5 @@
 package com.project;
 
-import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
-import static com.almasb.fxgl.dsl.FXGL.getAudioPlayer;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -66,13 +63,14 @@ public class App extends GameApplication {
         physics = new PhysicsManager(player);
         item = new ItemSpawner();
 
-        getAudioPlayer().stopAllMusic();
+         FXGL.getAudioPlayer().stopAllMusic();
         FXGL.getSettings().setGlobalSoundVolume(0.5);
         FXGL.getSettings().setGlobalMusicVolume(0.5);
         FXGL.runOnce(() -> {
-            Music backgroundMusic = getAssetLoader().loadMusic("BGM.mp3");
-            getAudioPlayer().loopMusic(backgroundMusic);
+            Music backgroundMusic = FXGL.getAssetLoader().loadMusic("BGM.mp3");
+            FXGL.getAudioPlayer().loopMusic(backgroundMusic);
         }, Duration.seconds(0.1));
+
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);
