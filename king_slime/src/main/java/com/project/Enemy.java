@@ -27,7 +27,7 @@
             int frameHeight = 64;
             int framesPerRow = 8;
 
-            Image image = FXGL.image("Slime3.png");
+            Image image = FXGL.image("Slime2.png");
 
             enemyIdle = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(0.5), 0, 0);
             enemyWalk = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(0.5), 1, 7);

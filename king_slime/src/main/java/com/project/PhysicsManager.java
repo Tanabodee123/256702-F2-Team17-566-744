@@ -12,7 +12,7 @@ import javafx.util.Duration;
 public class PhysicsManager {
     private boolean isShieldActive = false;
     private int potionTimer = 0;
-    private double maxSpeed = 3.0;
+    private double maxSpeed = 4.0;
     private Player player;
 
     public PhysicsManager(Player player) {
@@ -58,7 +58,7 @@ public class PhysicsManager {
             potion.removeFromWorld();
 
             if (potionTimer == 0) {
-                double newSpeed = Math.min(this.player.getSpeed() + 0.5, maxSpeed); 
+                double newSpeed = Math.min(this.player.getSpeed() + 1.0, maxSpeed); 
                 this.player.setSpeed(newSpeed);
             }
 
