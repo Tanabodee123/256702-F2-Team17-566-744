@@ -27,6 +27,11 @@ public class ItemSpawner {
         spawnItem(EntityType.MEAT, "meat.png");
     }
 
+    public void spawnMagic() {
+        spawnItem(EntityType.MAGIC, "magic.png");
+    }
+    
+
     private void spawnItem(EntityType type, String textureName) {
         Entity item = FXGL.entityBuilder()
                 .at(getRandomSpawnPosition())

@@ -10,6 +10,7 @@ import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -19,6 +20,8 @@ public class Player {
     private boolean isMoving = false;
     private AnimationChannel animIdle, animWalk;
     private AnimatedTexture texture;
+    private Point2D facingDirection = new Point2D(1, 0); // ค่าเริ่มต้นให้หันไปทางขวา
+
 
     public Player() {}
 
@@ -46,22 +49,27 @@ public class Player {
 
     public void movePlayer(int dx, int dy) {
         double newX = player.getX() + dx * playerSpeed;
-    double newY = player.getY() + dy * playerSpeed;
-
-    // ตรวจสอบขอบเขตของหน้าจอ
-    if (newX >= 0 && newX <= 1280 - player.getWidth() && newY >= 0 && newY <= 840 - player.getHeight()) {
-        player.translate(dx * playerSpeed, dy * playerSpeed);
-
-        if (!isMoving) {
-            texture.loopAnimationChannel(animWalk);
-            isMoving = true;
-        }
-
-        if (dx != 0) {
-            player.setScaleX(dx > 0 ? -1 : 1);
+        double newY = player.getY() + dy * playerSpeed;
+    
+        // ตรวจสอบขอบเขตของหน้าจอ
+        if (newX >= 0 && newX <= 1280 - player.getWidth() && newY >= 0 && newY <= 840 - player.getHeight()) {
+            player.translate(dx * playerSpeed, dy * playerSpeed);
+    
+            if (!isMoving) {
+                texture.loopAnimationChannel(animWalk);
+                isMoving = true;
+            }
+    
+            if (dx != 0 || dy != 0) {
+                facingDirection = new Point2D(dx, dy).normalize(); // อัปเดตทิศทางที่หันไป
+            }
+    
+            if (dx != 0) {
+                player.setScaleX(dx > 0 ? -1 : 1);
+            }
         }
     }
-    }
+    
 
     public void stopPlayer() {
         if (isMoving) {
@@ -82,6 +90,11 @@ public class Player {
         return player;
     }
 
+    public Point2D getFacingDirection() {
+        return facingDirection;
+    }
+    
+
     public void savePlayer(DataFile data) {
         Bundle bundle = new Bundle("playerData");
 
@@ -100,4 +113,5 @@ public class Player {
         double playerY = bundle.get("playerY");
         player.getTransformComponent().setPosition(playerX, playerY);
     }
+    
 }

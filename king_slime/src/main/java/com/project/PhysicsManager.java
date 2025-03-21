@@ -11,6 +11,7 @@ import javafx.util.Duration;
 
 public class PhysicsManager {
     private boolean isShieldActive = false;
+    private boolean isMagicActive = false;
     private int potionTimer = 0;
     private double maxSpeed = 4.0;
     private Player player;
@@ -24,6 +25,7 @@ public class PhysicsManager {
         addPhysics(EntityType.PLAYER, EntityType.POTION, this::Potion);
         addPhysics(EntityType.PLAYER, EntityType.MEAT, this::Meat);
         addPhysics(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
+        addPhysics(EntityType.PLAYER, EntityType.MAGIC, this::Magic);
     }
 
     private void addPhysics(EntityType typeA, EntityType typeB, BiConsumer<Entity, Entity> handler) {
@@ -100,4 +102,22 @@ public class PhysicsManager {
         }
     }
 
+    private void Magic(Entity player, Entity magic) {
+        if (player.getPosition().distance(magic.getPosition()) < 30) {
+            FXGL.play("itempickup.wav");
+            magic.removeFromWorld();
+            isMagicActive = true;
+    
+            
+            FXGL.runOnce(() -> {
+                isMagicActive = false;
+                FXGL.showMessage("BULLET TIME EXPIRED!");
+            }, Duration.seconds(10));
+        }
+    }
+
+    public boolean isMagicActive() {
+        return isMagicActive;
+    }
+    
 }

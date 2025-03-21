@@ -15,15 +15,20 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -62,7 +67,7 @@ public class App extends GameApplication {
         physics = new PhysicsManager(player);
         item = new ItemSpawner();
 
-         FXGL.getAudioPlayer().stopAllMusic();
+        FXGL.getAudioPlayer().stopAllMusic();
         FXGL.getSettings().setGlobalSoundVolume(0.5);
         FXGL.getSettings().setGlobalMusicVolume(0.5);
         FXGL.runOnce(() -> {
@@ -70,12 +75,12 @@ public class App extends GameApplication {
             FXGL.getAudioPlayer().loopMusic(backgroundMusic);
         }, Duration.seconds(0.1));
 
-
         player.createPlayer();
         enemy.spawnEnemies(5, player);
         FXGL.run(() -> item.spawnShield(), Duration.seconds(20));
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
+        FXGL.run(() -> item.spawnMagic(), Duration.seconds(1));
 
         FXGL.run(() -> {
             FXGL.inc("score", 1);
@@ -87,7 +92,7 @@ public class App extends GameApplication {
             enemy.spawnEnemies(newEnemyCount, player);
         }, Duration.seconds(10));
     }
-    
+
     @Override
     protected void initInput() {
         Movement("Move Left", KeyCode.A, -1, 0);
@@ -95,6 +100,15 @@ public class App extends GameApplication {
         Movement("Move Up", KeyCode.W, 0, -1);
         Movement("Move Down", KeyCode.S, 0, 1);
         SaveLoad();
+        FXGL.getInput().addAction(new UserAction("Shoot") {
+            @Override
+            protected void onActionBegin() {
+                if (physics.isMagicActive()) {
+                    shootMagic();
+                }
+            }
+        }, MouseButton.PRIMARY);
+
     }
 
     @Override
@@ -105,12 +119,20 @@ public class App extends GameApplication {
         vars.put("potionTime", 0);
         FXGL.set("isShieldActive", isShieldActive);
         vars.put("volume", 1.0);
-        vars.put("selectedCharacter", "Slime");
     }
 
     @Override
     protected void initPhysics() {
         physics.init();
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
+            @Override
+            protected void onCollisionBegin(Entity bullet, Entity enemy) {
+                bullet.removeFromWorld();
+                enemy.removeFromWorld();
+                FXGL.inc("score", 5);
+            }
+        });
+
     }
 
     @Override
@@ -248,6 +270,26 @@ public class App extends GameApplication {
                 .buildAndAttach();
 
         enemies.add(enemy);
+    }
+
+    private void shootMagic() {
+        Point2D direction = player.getFacingDirection(); // ดึงทิศทางที่ผู้เล่นหันไป
+
+        double offsetX = player.getEntity().getWidth() / 3;
+        double offsetY = player.getEntity().getHeight() / 3;
+
+        Point2D spawnPosition = player.getEntity().getPosition().add(offsetX, offsetY);
+
+        Entity magicProjectile = FXGL.entityBuilder()
+                .at(spawnPosition)
+                .type(EntityType.BULLET)
+                .viewWithBBox(FXGL.texture("magic_projectile.png"))
+                .bbox(new HitBox("Main", BoundingShape.circle(10)))
+                .with(new CollidableComponent(true))
+                .with(new ProjectileComponent(direction, 500))
+                .buildAndAttach();
+
+        FXGL.runOnce(magicProjectile::removeFromWorld, Duration.seconds(2));
     }
 
 }
