@@ -12,6 +12,7 @@ import javafx.util.Duration;
 public class PhysicsManager {
     private boolean isShieldActive = false;
     private boolean isMagicActive = false;
+    private boolean isBossAlive = false;
     private int potionTimer = 0;
     private double maxSpeed = 4.0;
     private Player player;
@@ -26,6 +27,8 @@ public class PhysicsManager {
         addPhysics(EntityType.PLAYER, EntityType.MEAT, this::Meat);
         addPhysics(EntityType.PLAYER, EntityType.SHIELD, this::Shield);
         addPhysics(EntityType.PLAYER, EntityType.MAGIC, this::Magic);
+        addPhysics(EntityType.PLAYER, EntityType.BOSS_BULLET, this::BossBullet);
+
     }
 
     private void addPhysics(EntityType typeA, EntityType typeB, BiConsumer<Entity, Entity> handler) {
@@ -53,6 +56,27 @@ public class PhysicsManager {
             }
         }
     }
+
+    private void BossBullet(Entity player, Entity bullet) {
+        bullet.removeFromWorld(); 
+    
+        if (isShieldActive) {
+            FXGL.play("metallic.wav"); 
+            return; 
+        }
+    
+        FXGL.play("retrohurt.wav"); 
+        FXGL.inc("playerHP", -20);
+    
+        // ถ้า HP หมด = Game Over
+        if (FXGL.geti("playerHP") <= 0) {          
+            FXGL.play("deatsound.wav");
+            FXGL.getAudioPlayer().stopAllMusic();
+            FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
+        }
+    }
+    
+    
 
     private void Potion(Entity player, Entity potion) { 
         if (player.getPosition().distance(potion.getPosition()) < 30) {

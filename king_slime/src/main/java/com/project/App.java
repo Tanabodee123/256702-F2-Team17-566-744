@@ -40,6 +40,8 @@ public class App extends GameApplication {
     private boolean isShieldActive = false;
     private List<Entity> enemies = new ArrayList<>();
     private AnimationChannel enemyWalk;
+    private Boss boss = new Boss();
+
 
     public static void main(String[] args) {
         launch(args);
@@ -77,10 +79,12 @@ public class App extends GameApplication {
 
         player.createPlayer();
         enemy.spawnEnemies(5, player);
-        FXGL.run(() -> item.spawnShield(), Duration.seconds(20));
+        boss.reset();
+
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
-        FXGL.run(() -> item.spawnMagic(), Duration.seconds(1));
+        FXGL.run(() -> item.spawnShield(), Duration.seconds(14));
+        FXGL.run(() -> item.spawnMagic(), Duration.seconds(18));
 
         FXGL.run(() -> {
             FXGL.inc("score", 1);
@@ -91,6 +95,14 @@ public class App extends GameApplication {
             FXGL.set("enemyCount", newEnemyCount);
             enemy.spawnEnemies(newEnemyCount, player);
         }, Duration.seconds(10));
+        
+        FXGL.getWorldProperties().<Integer>addListener("score", (oldValue, newValue) -> {
+            if (newValue >= 500 && !FXGL.getb("isBossAlive")) {
+                boss.spawnBoss();
+            }
+        });
+        
+        
     }
 
     @Override
@@ -119,6 +131,7 @@ public class App extends GameApplication {
         vars.put("potionTime", 0);
         FXGL.set("isShieldActive", isShieldActive);
         vars.put("volume", 1.0);
+
     }
 
     @Override
@@ -133,6 +146,14 @@ public class App extends GameApplication {
             }
         });
 
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.BOSS) {
+            @Override
+            protected void onCollisionBegin(Entity bullet, Entity bossEntity) {
+                bullet.removeFromWorld();
+                boss.takeDamage(10);
+            }
+        });
+        
     }
 
     @Override
@@ -140,7 +161,6 @@ public class App extends GameApplication {
         createUILabel("HP:", 30, 80, "playerHP", 65, 80);
         createUILabel("Score:", 30, 50, "score", 75, 50);
         createUILabel("Potion Time:", 30, 110, "potionTime", 105, 110);
-        createUILabel("Shield:", 30, 140, "isShieldActive", 80, 140);
     }
 
     private void createUILabel(String label, double labelX, double labelY, String property, double valueX,
@@ -291,5 +311,5 @@ public class App extends GameApplication {
 
         FXGL.runOnce(magicProjectile::removeFromWorld, Duration.seconds(2));
     }
-
+ 
 }
