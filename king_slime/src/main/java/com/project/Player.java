@@ -7,9 +7,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import com.almasb.fxgl.physics.box2d.dynamics.BodyDef;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
-import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
@@ -46,43 +44,54 @@ public class Player {
                 .at(1280 / 2, 840 / 2)
                 .type(EntityType.PLAYER)
                 .viewWithBBox(texture)
-                .bbox(new HitBox("PLAYER_HITBOX", BoundingShape.box(frameWidth, frameHeight)))
-                .with(physics)
-                .with(new CollidableComponent(true))
+                .bbox(new HitBox("PLAYER_HITBOX", BoundingShape.box(8, 8)))
+                .with(physics,new CollidableComponent(true))
                 .buildAndAttach();
         return this.player;
     }
 
-    public void movePlayer(int dx, int dy) {
-        double newX = player.getX() + dx * playerSpeed;
-        double newY = player.getY() + dy * playerSpeed;
+    public void movePlayer(double dx, double dy) {
+        PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
     
-        // ตรวจสอบขอบเขตของหน้าจอ
-        if (newX >= 0 && newX <= 1280 - player.getWidth() && newY >= 0 && newY <= 840 - player.getHeight()) {
-            player.translate(dx * playerSpeed, dy * playerSpeed);
+        if (dx == 0 && dy == 0) {
+            stopPlayer();
+            return;
+        }
+    
+        Point2D movement = new Point2D(dx, dy).normalize().multiply(playerSpeed * 60);
+        physics.setLinearVelocity(movement);
     
         if (!isMoving) {
             texture.loopAnimationChannel(animWalk);
             isMoving = true;
         }
     
-        if (dx != 0 || dy != 0) {
-            facingDirection = new Point2D(dx, dy).normalize(); // อัปเดตทิศทางที่หันไป
-        }
-    
+        facingDirection = new Point2D(dx, dy).normalize();
+        
         if (dx != 0) {
             player.setScaleX(dx > 0 ? -1 : 1);
         }
     }
-}
     
+    public void updateMovement() {
+        PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+    
+        if (physics.getLinearVelocity().magnitude() < 0.1) { // ลดค่าต่ำสุดเพื่อให้หยุดเร็วขึ้น
+            stopPlayer();
+        }
+    }
 
     public void stopPlayer() {
+        PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+        physics.setLinearVelocity(0, 0); // หยุดการเคลื่อนที่
+    
         if (isMoving) {
             texture.loopAnimationChannel(animIdle);
             isMoving = false;
         }
     }
+    
+    
 
     public void setSpeed(double speed) {
         this.playerSpeed = speed;

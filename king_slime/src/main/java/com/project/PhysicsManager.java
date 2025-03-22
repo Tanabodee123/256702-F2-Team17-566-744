@@ -12,7 +12,6 @@ import javafx.util.Duration;
 public class PhysicsManager {
     private boolean isShieldActive = false;
     private boolean isMagicActive = false;
-    private boolean isBossAlive = false;
     private int potionTimer = 0;
     private double maxSpeed = 4.0;
     private Player player;

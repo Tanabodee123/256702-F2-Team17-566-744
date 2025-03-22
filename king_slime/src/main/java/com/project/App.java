@@ -17,13 +17,11 @@ import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 
@@ -43,7 +41,7 @@ public class App extends GameApplication {
     private List<Entity> enemies = new ArrayList<>();
     private AnimationChannel enemyWalk;
     private Boss boss = new Boss();
-
+    private boolean movingUp, movingDown, movingLeft, movingRight;
 
     public static void main(String[] args) {
         launch(args);
@@ -68,7 +66,7 @@ public class App extends GameApplication {
     protected void initGame() {
         FXGL.getGameWorld().addEntityFactory(new Wall());
         FXGL.setLevelFromMap("mine-1.tmx");
-       
+
         player = new Player();
         enemy = new Enemy();
         physics = new PhysicsManager(player);
@@ -86,12 +84,10 @@ public class App extends GameApplication {
         enemy.spawnEnemies(5, player);
         boss.reset();
 
-    
-
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
         FXGL.run(() -> item.spawnShield(), Duration.seconds(14));
-        FXGL.run(() -> item.spawnMagic(), Duration.seconds(18));
+        FXGL.run(() -> item.spawnMagic(), Duration.seconds(1));
 
         FXGL.run(() -> {
             FXGL.inc("score", 1);
@@ -102,22 +98,74 @@ public class App extends GameApplication {
             FXGL.set("enemyCount", newEnemyCount);
             enemy.spawnEnemies(newEnemyCount, player);
         }, Duration.seconds(10));
-        
+
         FXGL.getWorldProperties().<Integer>addListener("score", (oldValue, newValue) -> {
             if (newValue >= 500 && !FXGL.getb("isBossAlive")) {
                 boss.spawnBoss();
             }
         });
 
-        
     }
-    
+
+    @Override
+    protected void onUpdate(double tpf) {
+        double dx = 0, dy = 0;
+        if (movingUp) dy -= 1;
+        if (movingDown)dy += 1;
+        if (movingLeft)dx -= 1;
+        if (movingRight)dx += 1;
+        player.movePlayer(dx, dy);
+    }
+
     @Override
     protected void initInput() {
-        Movement("Move Left", KeyCode.A, -1, 0);
-        Movement("Move Right", KeyCode.D, 1, 0);
-        Movement("Move Up", KeyCode.W, 0, -1);
-        Movement("Move Down", KeyCode.S, 0, 1);
+        FXGL.getInput().addAction(new UserAction("Move Up") {
+            @Override
+            protected void onActionBegin() {
+                movingUp = true;
+            }
+
+            @Override
+            protected void onActionEnd() {
+                movingUp = false;
+            }
+        }, KeyCode.W);
+
+        FXGL.getInput().addAction(new UserAction("Move Down") {
+            @Override
+            protected void onActionBegin() {
+                movingDown = true;
+            }
+
+            @Override
+            protected void onActionEnd() {
+                movingDown = false;
+            }
+        }, KeyCode.S);
+
+        FXGL.getInput().addAction(new UserAction("Move Left") {
+            @Override
+            protected void onActionBegin() {
+                movingLeft = true;
+            }
+
+            @Override
+            protected void onActionEnd() {
+                movingLeft = false;
+            }
+        }, KeyCode.A);
+
+        FXGL.getInput().addAction(new UserAction("Move Right") {
+            @Override
+            protected void onActionBegin() {
+                movingRight = true;
+            }
+
+            @Override
+            protected void onActionEnd() {
+                movingRight = false;
+            }
+        }, KeyCode.D);
         SaveLoad();
         FXGL.getInput().addAction(new UserAction("Shoot") {
             @Override
@@ -161,7 +209,7 @@ public class App extends GameApplication {
                 boss.takeDamage(10);
             }
         });
-        
+
     }
 
     @Override
@@ -190,20 +238,6 @@ public class App extends GameApplication {
         }
         FXGL.getGameScene().addUINode(labelText);
         FXGL.getGameScene().addUINode(valueText);
-    }
-
-    private void Movement(String name, KeyCode key, int dx, int dy) {
-        FXGL.getInput().addAction(new UserAction(name) {
-            @Override
-            protected void onAction() {
-                player.movePlayer(dx, dy);
-            }
-
-            @Override
-            protected void onActionEnd() {
-                player.stopPlayer();
-            }
-        }, key);
     }
 
     private void SaveLoad() {
@@ -319,5 +353,5 @@ public class App extends GameApplication {
 
         FXGL.runOnce(magicProjectile::removeFromWorld, Duration.seconds(2));
     }
- 
+
 }
