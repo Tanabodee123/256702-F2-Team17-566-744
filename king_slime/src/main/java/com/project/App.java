@@ -64,6 +64,18 @@ public class App extends GameApplication {
 
     @Override
     protected void initGame() {
+        Level level = FXGL.getAssetLoader().loadLevel("mine-1.tmx", new TMXLevelLoader());
+
+        FXGL.getGameWorld().addEntityFactory(new GameEntityFactory());
+        FXGL.setLevelFromMap("mine-1.tmx");
+        FXGL.getGameWorld().getEntitiesByType(EntityType.WALL).forEach(wall -> {
+            wall.addComponent(new CollidableComponent(true));
+        });
+        for (Entity entity : level.getEntities()) {
+            if (entity.getType() == EntityType.WALL) { // สมมุติว่า EntityType.WALL คือกำแพง
+                entity.addComponent(new CollidableComponent(true));
+            }
+            setLevel(level);
         player = new Player();
         enemy = new Enemy();
         physics = new PhysicsManager(player);
