@@ -8,7 +8,8 @@
     import javafx.scene.image.Image;
     import com.almasb.fxgl.entity.Entity;
     import com.almasb.fxgl.entity.components.CollidableComponent;
-    import com.almasb.fxgl.profile.DataFile;
+import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.profile.DataFile;
 
     import javafx.geometry.Point2D;
 
@@ -41,6 +42,7 @@
                         .at(getRandomSpawnPosition())
                         .type(EntityType.ENEMY)
                         .viewWithBBox(enemyTexture)
+                        .with(new PhysicsComponent())
                         .with(new CollidableComponent(true))
                         .buildAndAttach();
 

@@ -17,11 +17,13 @@ import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.ProjectileComponent;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 
@@ -64,18 +66,9 @@ public class App extends GameApplication {
 
     @Override
     protected void initGame() {
-        Level level = FXGL.getAssetLoader().loadLevel("mine-1.tmx", new TMXLevelLoader());
-
-        FXGL.getGameWorld().addEntityFactory(new GameEntityFactory());
+        FXGL.getGameWorld().addEntityFactory(new Wall());
         FXGL.setLevelFromMap("mine-1.tmx");
-        FXGL.getGameWorld().getEntitiesByType(EntityType.WALL).forEach(wall -> {
-            wall.addComponent(new CollidableComponent(true));
-        });
-        for (Entity entity : level.getEntities()) {
-            if (entity.getType() == EntityType.WALL) { // สมมุติว่า EntityType.WALL คือกำแพง
-                entity.addComponent(new CollidableComponent(true));
-            }
-            setLevel(level);
+       
         player = new Player();
         enemy = new Enemy();
         physics = new PhysicsManager(player);
@@ -92,6 +85,8 @@ public class App extends GameApplication {
         player.createPlayer();
         enemy.spawnEnemies(5, player);
         boss.reset();
+
+    
 
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
@@ -113,10 +108,10 @@ public class App extends GameApplication {
                 boss.spawnBoss();
             }
         });
-        
+
         
     }
-
+    
     @Override
     protected void initInput() {
         Movement("Move Left", KeyCode.A, -1, 0);
@@ -148,6 +143,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initPhysics() {
+        FXGL.getPhysicsWorld().setGravity(0, 0);
         physics.init();
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override

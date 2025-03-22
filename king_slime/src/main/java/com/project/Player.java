@@ -6,6 +6,10 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyDef;
+import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
@@ -29,7 +33,8 @@ public class Player {
         int frameWidth = 64;
         int frameHeight = 64;
         int framesPerRow = 8;
-
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.DYNAMIC);
         Image image = FXGL.image("Slime1.png");
 
         animIdle = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(1), 0, 0);
@@ -42,6 +47,7 @@ public class Player {
                 .type(EntityType.PLAYER)
                 .viewWithBBox(texture)
                 .bbox(new HitBox("PLAYER_HITBOX", BoundingShape.box(frameWidth, frameHeight)))
+                .with(physics)
                 .with(new CollidableComponent(true))
                 .buildAndAttach();
         return this.player;
@@ -55,20 +61,20 @@ public class Player {
         if (newX >= 0 && newX <= 1280 - player.getWidth() && newY >= 0 && newY <= 840 - player.getHeight()) {
             player.translate(dx * playerSpeed, dy * playerSpeed);
     
-            if (!isMoving) {
-                texture.loopAnimationChannel(animWalk);
-                isMoving = true;
-            }
+        if (!isMoving) {
+            texture.loopAnimationChannel(animWalk);
+            isMoving = true;
+        }
     
-            if (dx != 0 || dy != 0) {
-                facingDirection = new Point2D(dx, dy).normalize(); // อัปเดตทิศทางที่หันไป
-            }
+        if (dx != 0 || dy != 0) {
+            facingDirection = new Point2D(dx, dy).normalize(); // อัปเดตทิศทางที่หันไป
+        }
     
-            if (dx != 0) {
-                player.setScaleX(dx > 0 ? -1 : 1);
-            }
+        if (dx != 0) {
+            player.setScaleX(dx > 0 ? -1 : 1);
         }
     }
+}
     
 
     public void stopPlayer() {
