@@ -20,16 +20,16 @@ import java.util.Random;
 
 public class Enemy {
     private AnimationChannel enemyIdle, enemyWalk;
-    private double enemySpeed = 1.7;
+    private double enemySpeed = 1.3;
     private Random random = new Random();
     private List<Entity> enemies = new ArrayList<>();
 
     public Enemy() {
-        int frameWidth = 64;
-        int frameHeight = 64;
+        int frameWidth = 30;
+        int frameHeight = 30;
         int framesPerRow = 8;
 
-        Image image = FXGL.image("Slime2.png");
+        Image image = FXGL.image("Slime2_Walk_full.png");
 
         enemyIdle = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(0.5), 0, 0);
         enemyWalk = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(0.5), 1, 7);

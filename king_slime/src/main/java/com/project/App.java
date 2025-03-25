@@ -86,8 +86,8 @@ public class App extends GameApplication {
 
         FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
-        FXGL.run(() -> item.spawnShield(), Duration.seconds(14));
-        FXGL.run(() -> item.spawnMagic(), Duration.seconds(1));
+        FXGL.run(() -> item.spawnShield(), Duration.seconds(5));
+        FXGL.run(() -> item.spawnMagic(), Duration.seconds(16));
 
         FXGL.run(() -> {
             FXGL.inc("score", 1);

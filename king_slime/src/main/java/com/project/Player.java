@@ -18,7 +18,7 @@ import javafx.util.Duration;
 
 public class Player {
     private Entity player;
-    private double playerSpeed = 2.5;
+    private double playerSpeed = 3.0;
     private boolean isMoving = false;
     private AnimationChannel animIdle, animWalk;
     private AnimatedTexture texture;
@@ -28,12 +28,12 @@ public class Player {
     public Player() {}
 
     public Entity createPlayer() {
-        int frameWidth = 64;
-        int frameHeight = 64;
+        int frameWidth = 25;
+        int frameHeight = 25;
         int framesPerRow = 8;
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
-        Image image = FXGL.image("Slime1.png");
+        Image image = FXGL.image("Slime1_Walk_full.png");
 
         animIdle = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(1), 0, 0);
         animWalk = new AnimationChannel(image, framesPerRow, frameWidth, frameHeight, Duration.seconds(1), 1, 7);

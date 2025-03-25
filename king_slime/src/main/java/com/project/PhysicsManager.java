@@ -5,6 +5,7 @@ import java.util.function.BiConsumer;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.PhysicsComponent;
 
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -13,7 +14,7 @@ public class PhysicsManager {
     private boolean isShieldActive = false;
     private boolean isMagicActive = false;
     private int potionTimer = 0;
-    private double maxSpeed = 4.0;
+    private double maxSpeed = 7.0;
     private Player player;
 
     public PhysicsManager(Player player) {
@@ -40,22 +41,20 @@ public class PhysicsManager {
     }
 
     private void Enemy(Entity player, Entity enemy) {
-        if (isShieldActive && player.getPosition().distance(enemy.getPosition()) < 15) {
+        if (isShieldActive) {
             FXGL.play("metallic.wav");
-            Point2D knockback = enemy.getPosition().subtract(player.getPosition()).normalize().multiply(100);
-            enemy.translate(knockback);
-        } else if (player.getPosition().distance(enemy.getPosition()) < 15) {
+            PhysicsComponent enemyPhysics = enemy.getComponent(PhysicsComponent.class);
+
+            // คำนวณแรงกระเด็น
+            Point2D knockback = enemy.getPosition().subtract(player.getPosition()).normalize().multiply(40000);
+            enemyPhysics.setLinearVelocity(knockback);
+        } else{
             FXGL.play("retrohurt.wav");
-            FXGL.inc("playerHP", -20);
+            reduceHealth(20);
             enemy.removeFromWorld();
-            if (FXGL.geti("playerHP") <= 0) {          
-                FXGL.play("deatsound.wav");
-                FXGL.getAudioPlayer().stopAllMusic();
-                FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
-            }
         }
     }
-
+    
     private void BossBullet(Entity player, Entity bullet) {
         bullet.removeFromWorld(); 
     
@@ -65,15 +64,9 @@ public class PhysicsManager {
         }
     
         FXGL.play("retrohurt.wav"); 
-        FXGL.inc("playerHP", -20);
-    
-        // ถ้า HP หมด = Game Over
-        if (FXGL.geti("playerHP") <= 0) {          
-            FXGL.play("deatsound.wav");
-            FXGL.getAudioPlayer().stopAllMusic();
-            FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
-        }
+        reduceHealth(20);
     }
+    
     
     
 
@@ -83,7 +76,7 @@ public class PhysicsManager {
             potion.removeFromWorld();
 
             if (potionTimer == 0) {
-                double newSpeed = Math.min(this.player.getSpeed() + 1.0, maxSpeed); 
+                double newSpeed = Math.min(this.player.getSpeed() + 2.5, maxSpeed);
                 this.player.setSpeed(newSpeed);
             }
 
@@ -142,5 +135,16 @@ public class PhysicsManager {
     public boolean isMagicActive() {
         return isMagicActive;
     }
+
+    private void reduceHealth(int damage) {
+        FXGL.inc("playerHP", -damage);
+        
+        if (FXGL.geti("playerHP") <= 0) {          
+            FXGL.play("deatsound.wav");
+            FXGL.getAudioPlayer().stopAllMusic();
+            FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
+        }
+    }
+    
     
 }
