@@ -85,7 +85,7 @@ public class Enemy {
         Point2D enemyPos = enemy.getPosition();
     
         if (enemyPos.distance(playerPos) > 5) {
-            Point2D direction = playerPos.subtract(enemyPos).normalize().multiply(enemySpeed * 60);
+            Point2D direction = playerPos.subtract(enemyPos).normalize().multiply(enemySpeed * 40);
             physics.setLinearVelocity(direction);
     
             if (texture.getAnimationChannel() != enemyWalk) {

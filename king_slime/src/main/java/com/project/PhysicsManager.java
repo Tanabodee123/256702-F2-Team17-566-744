@@ -48,29 +48,26 @@ public class PhysicsManager {
             // คำนวณแรงกระเด็น
             Point2D knockback = enemy.getPosition().subtract(player.getPosition()).normalize().multiply(40000);
             enemyPhysics.setLinearVelocity(knockback);
-        } else{
+        } else {
             FXGL.play("retrohurt.wav");
             reduceHealth(20);
             enemy.removeFromWorld();
         }
     }
-    
+
     private void BossBullet(Entity player, Entity bullet) {
-        bullet.removeFromWorld(); 
-    
+        bullet.removeFromWorld();
+
         if (isShieldActive) {
-            FXGL.play("metallic.wav"); 
-            return; 
+            FXGL.play("metallic.wav");
+            return;
         }
-    
-        FXGL.play("retrohurt.wav"); 
+
+        FXGL.play("retrohurt.wav");
         reduceHealth(20);
     }
-    
-    
-    
 
-    private void Potion(Entity player, Entity potion) { 
+    private void Potion(Entity player, Entity potion) {
         if (player.getPosition().distance(potion.getPosition()) < 30) {
             FXGL.play("itempickup.wav");
             potion.removeFromWorld();
@@ -123,8 +120,7 @@ public class PhysicsManager {
             FXGL.play("itempickup.wav");
             magic.removeFromWorld();
             isMagicActive = true;
-    
-            
+
             FXGL.runOnce(() -> {
                 isMagicActive = false;
                 FXGL.showMessage("BULLET TIME EXPIRED!");
@@ -138,13 +134,18 @@ public class PhysicsManager {
 
     private void reduceHealth(int damage) {
         FXGL.inc("playerHP", -damage);
-        
+
         if (FXGL.geti("playerHP") <= 0) {          
             FXGL.play("deatsound.wav");
             FXGL.getAudioPlayer().stopAllMusic();
-            FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
+        
+            int score = FXGL.geti("score"); // ดึงคะแนน
+            FXGL.getDialogService().showInputBox("Enter your name:", name -> {
+                ScoreManager.saveHighScore(name, score); // บันทึกลง Scoreboard
+                FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
+            });
         }
+        
     }
-    
     
 }

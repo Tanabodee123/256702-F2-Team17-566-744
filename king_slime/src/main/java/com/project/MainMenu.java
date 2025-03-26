@@ -46,10 +46,24 @@ public class MainMenu extends FXGLMenu {
         Button btnSettings = new Button("Settings");
         btnSettings.setOnAction(e -> showSettingsMenu());
 
+        Button btnScoreboard = new Button("Scoreboard");
+        btnScoreboard.setOnAction(e -> {
+            ScoreManager.showHighScores();
+        });
+
         Button btnExit = new Button("Exit");
         btnExit.setOnAction(e -> fireExit());
 
-        mainMenuBox.getChildren().addAll(gameTitle, btnStart, btnSettings, btnExit);
+        btnStart.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnSettings.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #2196F3; -fx-text-fill: white;");
+        btnScoreboard.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #FFC107; -fx-text-fill: white;");
+        btnExit.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #f44336; -fx-text-fill: white;");
+
+        mainMenuBox.getChildren().addAll(gameTitle, btnStart, btnSettings, btnScoreboard, btnExit);
         mainMenuBox.setTranslateX((screenWidth - 450) / 2);
         mainMenuBox.setTranslateY((screenHeight - 200) / 2);
     }
@@ -71,6 +85,13 @@ public class MainMenu extends FXGLMenu {
         Button btnBack = new Button("Back");
         btnBack.setOnAction(e -> showMainMenu());
 
+        btnGameplay.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnControl.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #2196F3; -fx-text-fill: white;");
+        btnBack.setStyle(
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #f44336; -fx-text-fill: white;");
+
         settingsMenuBox.getChildren().addAll(settingsTitle, btnGameplay, btnControl, btnBack);
         settingsMenuBox.setTranslateX((screenWidth - menuWidth) / 2);
         settingsMenuBox.setTranslateY((screenHeight - menuHeight) / 2);
@@ -86,14 +107,13 @@ public class MainMenu extends FXGLMenu {
         getContentRoot().getChildren().addAll(background, mainMenuBox);
     }
 
-    
-
     private void showGameplayInfo() {
         FXGL.getDialogService().showMessageBox(
                 "Gameplay Info:\n\n" +
                         "- 🛡️ Shield: ป้องกันดาเมจชั่วคราว \n" +
                         "- 🍷 Potion: เพิ่มความเร็ว \n" +
-                        "- 🍖 Meat: เพิ่มพลังชีวิต");
+                        "- 🍖 Meat: เพิ่มพลังชีวิต\n" +
+                        "- 🧙 Magic: ยิงกระสุนได้\n");
     }
 
     private void showControlInfo() {
@@ -102,8 +122,6 @@ public class MainMenu extends FXGLMenu {
                         "- W: เดินขึ้น\n" +
                         "- A: เดินซ้าย\n" +
                         "- S: เดินลง\n" +
-                        "- D: เดินขวา\n" +
-                        "- F: บันทึกเกม\n" +
-                        "- G: โหลดเกม");
+                        "- D: เดินขวา");
     }
 }
