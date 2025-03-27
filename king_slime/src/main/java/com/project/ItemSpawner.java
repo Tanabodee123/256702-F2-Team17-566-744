@@ -45,8 +45,36 @@ public class ItemSpawner {
     }
 
     private Point2D getRandomSpawnPosition() {
-        double x = random.nextDouble() * FXGL.getAppWidth();
-        double y = random.nextDouble() * FXGL.getAppHeight();
-        return new Point2D(x, y);
+        Point2D position;
+        int maxAttempts = 10;
+        int attempts = 0;
+    
+        do {
+            double x = random.nextDouble() * (FXGL.getAppWidth() - 100);
+            double y = random.nextDouble() * (FXGL.getAppHeight() - 100);
+            position = new Point2D(x, y);
+            attempts++;
+        } while (isCollidingWithWall(position) && attempts < maxAttempts);
+    
+        return position;
     }
+
+    private boolean isCollidingWithWall(Point2D position) {
+        return FXGL.getGameWorld()
+                   .getEntitiesByType(EntityType.WALL)
+                   .stream()
+                   .anyMatch(wall -> {
+                       double wallX = wall.getX();
+                       double wallY = wall.getY();
+                       double wallWidth = wall.getWidth();
+                       double wallHeight = wall.getHeight();
+    
+                       return position.getX() < wallX + wallWidth &&
+                              position.getX() + 40 > wallX &&
+                              position.getY() < wallY + wallHeight &&
+                              position.getY() + 40 > wallY;
+                   });
+    }
+    
+    
 }

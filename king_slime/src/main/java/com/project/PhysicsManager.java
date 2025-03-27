@@ -139,9 +139,9 @@ public class PhysicsManager {
             FXGL.play("deatsound.wav");
             FXGL.getAudioPlayer().stopAllMusic();
         
-            int score = FXGL.geti("score"); // ดึงคะแนน
+            int score = FXGL.geti("score");
             FXGL.getDialogService().showInputBox("Enter your name:", name -> {
-                ScoreManager.saveHighScore(name, score); // บันทึกลง Scoreboard
+                ScoreManager.saveHighScore(name, score);
                 FXGL.showMessage("Game Over", () -> FXGL.getGameController().gotoMainMenu());
             });
         }

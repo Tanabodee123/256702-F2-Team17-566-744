@@ -77,7 +77,8 @@ public class App extends GameApplication {
         enemy.spawnEnemies(5, player);
         boss.reset();
 
-        FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
+
+        FXGL.run(() -> item.spawnPotion(), Duration.seconds(1));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
         FXGL.run(() -> item.spawnShield(), Duration.seconds(14));
         FXGL.run(() -> item.spawnMagic(), Duration.seconds(16));
@@ -188,6 +189,7 @@ public class App extends GameApplication {
         vars.put("potionTime", 0);
         FXGL.set("isShieldActive", isShieldActive);
         vars.put("volume", 1.0);
+        FXGL.set("isBossAlive", false);
 
     }
 
@@ -209,6 +211,7 @@ public class App extends GameApplication {
             protected void onCollisionBegin(Entity bullet, Entity bossEntity) {
                 bullet.removeFromWorld();
                 boss.takeDamage(10);
+                FXGL.inc("score", 1);
             }
         });
 
@@ -216,6 +219,13 @@ public class App extends GameApplication {
 
     @Override
     protected void initUI() {
+        javafx.scene.shape.Rectangle border = new javafx.scene.shape.Rectangle(150, 110);
+        border.setStroke(javafx.scene.paint.Color.BLACK);
+        border.setFill(javafx.scene.paint.Color.WHITE);
+        border.setStrokeWidth(2);
+        border.setTranslateX(5);
+        border.setTranslateY(20);
+        FXGL.getGameScene().addUINode(border);
         createUILabel("HP:", 30, 80, "playerHP", 65, 80);
         createUILabel("Score:", 30, 50, "score", 75, 50);
         createUILabel("Potion Time:", 30, 110, "potionTime", 105, 110);

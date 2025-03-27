@@ -1,42 +1,39 @@
 package com.project;
 
 import com.almasb.fxgl.dsl.FXGL;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScoreManager {
-    private static final String SCORE_FILE = "highscores.sav";
+    private static final Path SCORE_FILE = Path.of("highscores.txt");
 
     public static void saveHighScore(String playerName, int score) {
-        List<String> scores = FXGL.getWorldProperties().exists("highscores") ? 
-            FXGL.getWorldProperties().getObject("highscores") : new ArrayList<>();
-    
+        List<String> scores = loadHighScores();
         scores.add(playerName + " - " + score);
         scores.sort((a, b) -> Integer.compare(
             Integer.parseInt(b.split(" - ")[1]), 
             Integer.parseInt(a.split(" - ")[1])
         ));
-    
+
         if (scores.size() > 5) scores = scores.subList(0, 5);
-    
-        FXGL.getWorldProperties().setValue("highscores", scores);
-        FXGL.getSaveLoadService().saveAndWriteTask(SCORE_FILE).run(); // บันทึกข้อมูล
+
+        try {
+            Files.write(SCORE_FILE, scores); 
+        } catch (IOException e) {
+            FXGL.getDialogService().showMessageBox("Failed to save high scores!");
+        }
     }
-    
 
     public static List<String> loadHighScores() {
-        List<String> scores = new ArrayList<>();
-    
-        if (FXGL.getSaveLoadService().saveFileExists(SCORE_FILE)) {
-            FXGL.getSaveLoadService().readAndLoadTask(SCORE_FILE).run(); // โหลดข้อมูลเซฟเข้า FXGL
-    
-            if (FXGL.getWorldProperties().exists("highscores")) {
-                scores = FXGL.getWorldProperties().getObject("highscores");
-            }
+        try {
+            if (!Files.exists(SCORE_FILE)) return new ArrayList<>();
+            return Files.readAllLines(SCORE_FILE); 
+        } catch (IOException e) {
+            return new ArrayList<>();
         }
-    
-        return scores;
     }
 
     public static void showHighScores() {

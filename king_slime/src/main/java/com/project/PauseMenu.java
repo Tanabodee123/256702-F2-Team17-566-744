@@ -47,7 +47,8 @@ public class PauseMenu extends FXGLMenu {
                 "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
         btnMainMenu.setStyle(
                 "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #2196F3; -fx-text-fill: white;");
-        btnExit.setStyle(   "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #f44336; -fx-text-fill: white;");
+        btnExit.setStyle(   
+                "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #f44336; -fx-text-fill: white;");
 
         pauseMenuBox.getChildren().addAll(pauseTitle, btnResume, btnMainMenu, btnExit);
         pauseMenuBox.setTranslateX(FXGL.getAppWidth() / 2 - 100);
