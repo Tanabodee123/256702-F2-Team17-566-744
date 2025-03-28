@@ -23,7 +23,7 @@ public class MainMenu extends FXGLMenu {
 
     public MainMenu() {
         super(MenuType.MAIN_MENU);
-        background = FXGL.texture("Slime_King_Adventure_32bit_Text_Space.png");
+        background = FXGL.texture("pok-1.png");
         background.setFitWidth(screenWidth);
         background.setFitHeight(screenHeight);
 
@@ -38,7 +38,7 @@ public class MainMenu extends FXGLMenu {
 
         Text gameTitle = new Text("King Slime Adventure");
         gameTitle.setFont(Font.font("Arial", 48));
-        gameTitle.setFill(Color.BLACK);
+        gameTitle.setFill(Color.TRANSPARENT);
 
         Button btnStart = new Button("Start Game");
         btnStart.setOnAction(e -> fireNewGame());
