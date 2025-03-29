@@ -23,7 +23,11 @@ public class Player {
     private AnimationChannel animIdle, animWalk;
     private AnimatedTexture texture;
     private Point2D facingDirection = new Point2D(1, 0); // ค่าเริ่มต้นให้หันไปทางขวา
-
+    private boolean isDashing = false; // สถานะการแดช
+    private boolean canDash = true; // สถานะคูลดาวน์
+    private final double dashSpeed = 10.0; // ความเร็วในการแดช
+    private final Duration dashDuration = Duration.seconds(0.5); // ระยะเวลาแดช
+    private final Duration dashCooldown = Duration.seconds(5); // คูลดาวน์ 5 วินาที
 
     public Player() {}
 
@@ -128,5 +132,31 @@ public class Player {
         double playerY = bundle.get("playerY");
         player.getTransformComponent().setPosition(playerX, playerY);
     }
+    public void dash() {
+        if (!canDash || isDashing) return; // ถ้าแดชไม่ได้หรือกำลังแดชอยู่ ให้หยุดการทำงาน
+    
+        isDashing = true;
+        canDash = false;
+    
+        // เพิ่มความเร็วชั่วคราวในการแดช
+        PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
+        // คูณด้วย 60 เพื่อให้เห็นการพุ่งชัดเจน (ปรับได้ตามต้องการ)
+        Point2D dashVelocity = facingDirection.normalize().multiply(dashSpeed * 600);
+        physics.setLinearVelocity(dashVelocity);
+    
+        // ตั้งสถานะอมตะ (ปิดการชน)
+        player.getComponent(CollidableComponent.class).setValue(false);
+    
+        // หลังจาก dashDuration ให้หยุดแดชและเปิดการชนใหม่
+        FXGL.runOnce(() -> {
+            physics.setLinearVelocity(0, 0); // หยุดการเคลื่อนที่
+            player.getComponent(CollidableComponent.class).setValue(true); // เปิดการชน
+            isDashing = false;
+        }, dashDuration);
+    
+        // เปิดให้แดชได้อีกครั้งหลังจาก dashCooldown (5 วินาที)
+        FXGL.runOnce(() -> canDash = true, dashCooldown);
+    }
+    
     
 }

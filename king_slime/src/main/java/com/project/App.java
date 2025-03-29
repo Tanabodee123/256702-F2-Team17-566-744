@@ -78,7 +78,7 @@ public class App extends GameApplication {
         boss.reset();
 
 
-        FXGL.run(() -> item.spawnPotion(), Duration.seconds(1));
+        FXGL.run(() -> item.spawnPotion(), Duration.seconds(8));
         FXGL.run(() -> item.spawnMeat(), Duration.seconds(12));
         FXGL.run(() -> item.spawnShield(), Duration.seconds(14));
         FXGL.run(() -> item.spawnMagic(), Duration.seconds(16));
@@ -94,7 +94,7 @@ public class App extends GameApplication {
         }, Duration.seconds(10));
 
         FXGL.getWorldProperties().<Integer>addListener("score", (oldValue, newValue) -> {
-            if (newValue >= 500 && !FXGL.getb("isBossAlive")) {
+            if (newValue >= 5 && !FXGL.getb("isBossAlive")) {
                 boss.spawnBoss();
             }
         });
@@ -114,6 +114,8 @@ public class App extends GameApplication {
             dx += 1;
         player.movePlayer(dx, dy);
     }
+
+  
 
     @Override
     protected void initInput() {
@@ -179,11 +181,18 @@ public class App extends GameApplication {
                 FXGL.getSceneService().pushSubScene(new PauseMenu());
             }
         }, KeyCode.ESCAPE);
+
+        FXGL.getInput().addAction(new UserAction("Dash") {
+            @Override
+            protected void onActionBegin() {
+                player.dash();
+            }
+        }, KeyCode.R);
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("playerHP", 100);
+        vars.put("playerHP", 10000000);
         vars.put("score", 0);
         vars.put("enemyCount", 3);
         vars.put("potionTime", 0);
@@ -212,6 +221,12 @@ public class App extends GameApplication {
                 bullet.removeFromWorld();
                 boss.takeDamage(10);
                 FXGL.inc("score", 1);
+            }
+        });
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BOSS_BULLET, EntityType.WALL) {
+            @Override
+            protected void onCollisionBegin(Entity bullet, Entity wall) {
+                bullet.removeFromWorld(); // ลบกระสุนเมื่อชนกำแพง
             }
         });
 

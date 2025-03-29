@@ -43,7 +43,7 @@ public class MainMenu extends FXGLMenu {
         Button btnStart = new Button("Start Game");
         btnStart.setOnAction(e -> fireNewGame());
 
-        Button btnSettings = new Button("Settings");
+        Button btnSettings = new Button("Game Info");
         btnSettings.setOnAction(e -> showSettingsMenu());
 
         Button btnScoreboard = new Button("Scoreboard");
@@ -69,14 +69,19 @@ public class MainMenu extends FXGLMenu {
     }
 
     private void createSettingsMenu() {
+        
         settingsMenuBox = new VBox(20);
         settingsMenuBox.setAlignment(Pos.CENTER);
 
-        Text settingsTitle = new Text("Settings");
+        ImageView background = new ImageView(FXGL.image("settings_background.png")); // ใช้ภาพพื้นหลัง
+        background.setFitWidth(screenWidth);
+        background.setFitHeight(screenHeight);
+
+        Text settingsTitle = new Text("Game Info");
         settingsTitle.setFont(Font.font("Arial", 36));
         settingsTitle.setFill(Color.BLACK);
 
-        Button btnGameplay = new Button("Gameplay");
+        Button btnGameplay = new Button("Item Info");
         btnGameplay.setOnAction(e -> showGameplayInfo());
 
         Button btnControl = new Button("Controls");
@@ -122,6 +127,10 @@ public class MainMenu extends FXGLMenu {
                         "- W: เดินขึ้น\n" +
                         "- A: เดินซ้าย\n" +
                         "- S: เดินลง\n" +
-                        "- D: เดินขวา");
+                        "- D: เดินขวา\n" +
+                        "- R: พุ่ง\n" +
+                        "- Left Click: ยิงกระสุน\n" +
+                        "- ESC: หยุดเกม");
+
     }
 }

@@ -84,7 +84,7 @@ public class Enemy {
         Point2D playerPos = player.getEntity().getPosition();
         Point2D enemyPos = enemy.getPosition();
     
-        if (enemyPos.distance(playerPos) > 5) {
+        if (enemyPos.distance(playerPos) > 2) {
             Point2D direction = playerPos.subtract(enemyPos).normalize().multiply(enemySpeed * 40);
             physics.setLinearVelocity(direction);
     
