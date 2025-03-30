@@ -41,7 +41,7 @@ public class App extends GameApplication {
         settings.setHeight(832);
         settings.setTitle("King Slime Adventure");
         settings.setVersion("0.1");
-        settings.setMainMenuEnabled(true);
+        settings.setMainMenuEnabled(true); 
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
@@ -66,8 +66,8 @@ public class App extends GameApplication {
         item = new ItemSpawner();
 
         FXGL.getAudioPlayer().stopAllMusic();
-        FXGL.getSettings().setGlobalSoundVolume(0.5);
-        FXGL.getSettings().setGlobalMusicVolume(0.5);
+        FXGL.getSettings().setGlobalSoundVolume(0.2);
+        FXGL.getSettings().setGlobalMusicVolume(0.2);
         FXGL.runOnce(() -> {
             Music backgroundMusic = FXGL.getAssetLoader().loadMusic("BGM.mp3");
             FXGL.getAudioPlayer().loopMusic(backgroundMusic);
@@ -198,6 +198,7 @@ public class App extends GameApplication {
         FXGL.set("isShieldActive", isShieldActive);
         vars.put("volume", 1.0);
         FXGL.set("isBossAlive", false);
+        vars.put("magicTime", 0);
 
     }
 
@@ -233,7 +234,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initUI() {
-        javafx.scene.shape.Rectangle border = new javafx.scene.shape.Rectangle(150, 110);
+        javafx.scene.shape.Rectangle border = new javafx.scene.shape.Rectangle(150, 140);
         border.setStroke(javafx.scene.paint.Color.BLACK);
         border.setFill(javafx.scene.paint.Color.WHITE);
         border.setStrokeWidth(2);
@@ -243,6 +244,7 @@ public class App extends GameApplication {
         createUILabel("HP:", 30, 80, "playerHP", 65, 80);
         createUILabel("Score:", 30, 50, "score", 75, 50);
         createUILabel("Potion Time:", 30, 110, "potionTime", 105, 110);
+        createUILabel("Magic Time:", 30, 140, "magicTime", 100, 140);
     }
 
     private void createUILabel(String label, double labelX, double labelY, String property, double valueX,

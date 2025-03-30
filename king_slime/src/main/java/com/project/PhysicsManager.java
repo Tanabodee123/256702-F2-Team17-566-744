@@ -16,6 +16,9 @@ public class PhysicsManager {
     private int potionTimer = 0;
     private double maxSpeed = 7.0;
     private Player player;
+    private int magicTimer = 0;
+    private boolean isMagicTimerRunning = false;
+    private boolean isPotionTimerRunning = false;
 
     public PhysicsManager(Player player) {
         this.player = player;
@@ -80,15 +83,25 @@ public class PhysicsManager {
             potionTimer += 5;
             FXGL.set("potionTime", potionTimer);
 
-            FXGL.run(() -> {
+            if (!isPotionTimerRunning) {
+                isPotionTimerRunning = true;
+                startPotionTimer();
+            }
+        }
+    }
+
+    private void startPotionTimer() {
+        FXGL.getGameTimer().runAtInterval(() -> {
+            if (potionTimer > 0) {
                 potionTimer--;
                 FXGL.set("potionTime", potionTimer);
-
-                if (potionTimer <= 0) {
-                    this.player.setSpeed(3.0);
-                }
-            }, Duration.seconds(1), 5);
-        }
+            }
+    
+            if (potionTimer <= 0) {
+                this.player.setSpeed(3.0);
+                isPotionTimerRunning = false;
+            }
+        }, Duration.seconds(1));
     }
 
     private void Meat(Entity player, Entity meat) {
@@ -120,12 +133,29 @@ public class PhysicsManager {
             FXGL.play("itempickup.wav");
             magic.removeFromWorld();
             isMagicActive = true;
-
-            FXGL.runOnce(() -> {
-                isMagicActive = false;
-                FXGL.showMessage("BULLET TIME EXPIRED!");
-            }, Duration.seconds(10));
+            magicTimer += 5;
+            FXGL.set("magicTime", magicTimer);
+    
+            
+            if (!isMagicTimerRunning) {
+                isMagicTimerRunning = true;
+                startMagicTimer();
+            }
         }
+    }
+
+    private void startMagicTimer() {
+        FXGL.getGameTimer().runAtInterval(() -> {
+            if (magicTimer > 0) {
+                magicTimer--;
+                FXGL.set("magicTime", magicTimer);
+            }
+    
+            if (magicTimer <= 0) {
+                isMagicActive = false;
+                isMagicTimerRunning = false;
+            }
+        }, Duration.seconds(1));
     }
 
     public boolean isMagicActive() {
