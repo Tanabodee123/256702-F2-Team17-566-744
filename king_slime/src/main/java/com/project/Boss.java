@@ -46,9 +46,20 @@ public class Boss {
                 .buildAndAttach();
 
             FXGL.getWorldProperties().setValue("bossHP", bossHP);
+            FXGL.getWorldProperties().setValue("maxBossHP", 1000);
                 texture.loopAnimationChannel(BossIdle);
 
                 startBossBehavior();
+
+                UIBossBar uiInGame = (UIBossBar) FXGL.getGameScene().getUINodes().stream()
+            .filter(node -> node instanceof UIBossBar)
+            .findFirst()
+            .orElse(null);
+        if (uiInGame != null) {
+        uiInGame.showBossHPBar();
+        uiInGame.resetBossHPText(); // ตั้งค่าเริ่มต้นเป็น ???
+    }
+
             
     } 
    
@@ -103,13 +114,24 @@ public class Boss {
     public void takeDamage(int damage) {
         bossHP -= damage;
         FXGL.getWorldProperties().setValue("bossHP", Math.max(bossHP, 0)); // อัปเดต UI
-    
+        UIBossBar uiInGame = (UIBossBar) FXGL.getGameScene().getUINodes().stream()
+            .filter(node -> node instanceof UIBossBar)
+            .findFirst()
+            .orElse(null);
+        if (uiInGame != null) {
+            uiInGame.updateBossHPText(bossHP); // เปลี่ยนข้อความ HP
+        }
         if (bossHP <= 0) {
             FXGL.showMessage("Boss Defeated! 🎉");
             boss.removeFromWorld();
             FXGL.inc("score", 500);
             isBossAlive = false;
+
+            if (uiInGame != null) {
+                uiInGame.hideBossHPBar();
+            }
         }
+        
     }
 
     public boolean isBossAlive() {

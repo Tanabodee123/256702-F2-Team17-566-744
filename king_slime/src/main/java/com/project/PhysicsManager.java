@@ -105,9 +105,11 @@ public class PhysicsManager {
     }
 
     private void Meat(Entity player, Entity meat) {
-        if ((player.getPosition().distance(meat.getPosition()) < 30)) {
+        if (player.getPosition().distance(meat.getPosition()) < 30) {
             FXGL.play("itempickup.wav");
-            FXGL.inc("playerHP", 20);
+            int currentHP = FXGL.geti("playerHP");
+            int newHP = Math.min(currentHP + 20, 200);
+            FXGL.set("playerHP", newHP);
             meat.removeFromWorld();
         }
     }
@@ -138,6 +140,7 @@ public class PhysicsManager {
     
             
             if (!isMagicTimerRunning) {
+                FXGL.set("isMagicActive", true);
                 isMagicTimerRunning = true;
                 startMagicTimer();
             }
@@ -152,6 +155,7 @@ public class PhysicsManager {
             }
     
             if (magicTimer <= 0) {
+                FXGL.set("isMagicActive", false);
                 isMagicActive = false;
                 isMagicTimerRunning = false;
             }

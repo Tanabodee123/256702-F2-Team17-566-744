@@ -49,8 +49,10 @@ public class Player {
                 .bbox(new HitBox("PLAYER_HITBOX", BoundingShape.box(8, 8)))
                 .with(physics,new CollidableComponent(true))
                 .buildAndAttach();
-        return this.player;
+
+        return player;
     }
+
 
     public void movePlayer(double dx, double dy) {
         PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
@@ -115,9 +117,7 @@ public class Player {
         isDashing = true;
         canDash = false;
     
-        // เพิ่มความเร็วชั่วคราวในการแดช
         PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
-        // คูณด้วย 60 เพื่อให้เห็นการพุ่งชัดเจน (ปรับได้ตามต้องการ)
         Point2D dashVelocity = facingDirection.normalize().multiply(dashSpeed * 3600);
         physics.setLinearVelocity(dashVelocity);
     

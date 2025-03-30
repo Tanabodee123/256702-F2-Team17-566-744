@@ -28,6 +28,7 @@ public class App extends GameApplication {
     private PhysicsManager physics;
     private ItemSpawner item;
     private boolean isShieldActive = false;
+    private boolean isMagicActive = false;
     private Boss boss = new Boss();
     private boolean movingUp, movingDown, movingLeft, movingRight;
 
@@ -41,7 +42,7 @@ public class App extends GameApplication {
         settings.setHeight(832);
         settings.setTitle("King Slime Adventure");
         settings.setVersion("0.1");
-        settings.setMainMenuEnabled(true); 
+        settings.setMainMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
@@ -66,8 +67,8 @@ public class App extends GameApplication {
         item = new ItemSpawner();
 
         FXGL.getAudioPlayer().stopAllMusic();
-        FXGL.getSettings().setGlobalSoundVolume(0.2);
-        FXGL.getSettings().setGlobalMusicVolume(0.2);
+        FXGL.getSettings().setGlobalSoundVolume(0.5);
+        FXGL.getSettings().setGlobalMusicVolume(0.5);
         FXGL.runOnce(() -> {
             Music backgroundMusic = FXGL.getAssetLoader().loadMusic("BGM.mp3");
             FXGL.getAudioPlayer().loopMusic(backgroundMusic);
@@ -94,7 +95,7 @@ public class App extends GameApplication {
         }, Duration.seconds(10));
 
         FXGL.getWorldProperties().<Integer>addListener("score", (oldValue, newValue) -> {
-            if (newValue >= 500 && !FXGL.getb("isBossAlive")) {
+            if (newValue >= 100 && !FXGL.getb("isBossAlive")) {
                 boss.spawnBoss();
                 FXGL.set("isBossAlive", true);
             }
@@ -191,14 +192,17 @@ public class App extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("playerHP", 100);
+        vars.put("playerHP", 200);
+        vars.put("maxPlayerHP", 200); 
+        vars.put("bossHP", 500); 
+        vars.put("maxBossHP", 500); 
         vars.put("score", 0);
         vars.put("enemyCount", 3);
         vars.put("potionTime", 0);
         FXGL.set("isShieldActive", isShieldActive);
         vars.put("volume", 1.0);
         FXGL.set("isBossAlive", false);
-        vars.put("magicTime", 0);
+        FXGL.set("isMagicActive", isMagicActive);
 
     }
 
@@ -234,17 +238,64 @@ public class App extends GameApplication {
 
     @Override
     protected void initUI() {
-        javafx.scene.shape.Rectangle border = new javafx.scene.shape.Rectangle(150, 140);
-        border.setStroke(javafx.scene.paint.Color.BLACK);
-        border.setFill(javafx.scene.paint.Color.WHITE);
-        border.setStrokeWidth(2);
-        border.setTranslateX(5);
-        border.setTranslateY(20);
-        FXGL.getGameScene().addUINode(border);
-        createUILabel("HP:", 30, 80, "playerHP", 65, 80);
-        createUILabel("Score:", 30, 50, "score", 75, 50);
-        createUILabel("Potion Time:", 30, 110, "potionTime", 105, 110);
-        createUILabel("Magic Time:", 30, 140, "magicTime", 100, 140);
+        UIBossBar uiInGame = new UIBossBar();
+        FXGL.getGameScene().addUINode(uiInGame);
+
+        javafx.scene.shape.Rectangle background = new javafx.scene.shape.Rectangle(130, 150);
+    background.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+    background.setStroke(javafx.scene.paint.Color.BLACK);
+    background.setStrokeWidth(2);
+    background.setArcWidth(15);
+    background.setArcHeight(15);
+    background.setTranslateX(10); // ตำแหน่ง X ของพื้นหลัง
+    background.setTranslateY(10); // ตำแหน่ง Y ของพื้นหลัง
+
+    FXGL.getGameScene().addUINode(background);
+
+    // สร้าง ProgressBar สำหรับหลอดเลือดผู้เล่น
+    javafx.scene.control.ProgressBar playerHPBar = new javafx.scene.control.ProgressBar();
+    playerHPBar.setPrefWidth(100); // ความกว้างของหลอดเลือด
+    playerHPBar.setStyle("-fx-accent: green;"); // สีของหลอดเลือด
+    playerHPBar.setTranslateX(20); // ตำแหน่ง X ของหลอดเลือด
+    playerHPBar.setTranslateY(35); // ตำแหน่ง Y ของหลอดเลือด
+    playerHPBar.setProgress(1.0); // กำหนดค่าเริ่มต้นเป็น 100% (เต็มแถบ)
+
+    // เชื่อมโยงค่าหลอดเลือดผู้เล่นกับ ProgressBar
+    FXGL.getWorldProperties().<Number>addListener("playerHP", (oldValue, newValue) -> {
+        double progress = newValue.doubleValue() / 200.0; // สมมติ max HP = 200
+        playerHPBar.setProgress(progress);
+    });
+
+    // เพิ่มข้อความ "Player HP"
+    javafx.scene.text.Text playerHPLabel = new javafx.scene.text.Text("Player HP");
+    playerHPLabel.setStyle("-fx-font-size: 16px; -fx-fill: black;");
+    playerHPLabel.setTranslateX(20); // ตำแหน่ง X ของข้อความ
+    playerHPLabel.setTranslateY(28.5); // ตำแหน่ง Y ของข้อความ
+        
+    // เพิ่มข้อความแสดงจำนวนเลือดของผู้เล่น
+    javafx.scene.text.Text playerHPValue = new javafx.scene.text.Text();
+    playerHPValue.setStyle("-fx-font-size: 14px; -fx-fill: black;");
+    playerHPValue.setTranslateX(45); // ตำแหน่ง X ของข้อความ
+    playerHPValue.setTranslateY(49); // ตำแหน่ง Y ของข้อความ
+    playerHPValue.textProperty().bind(FXGL.getWorldProperties().intProperty("playerHP").asString()
+            .concat("/")
+            .concat(FXGL.getWorldProperties().intProperty("maxPlayerHP").asString()));
+
+    // เพิ่มข้อความ "Score"
+    createUILabel("Score:", 20, 70, "score", 100, 70);
+
+    // เพิ่มข้อความ "Potion Time"
+    createUILabel("Potion Time:", 20, 90, "potionTime", 100, 90);
+
+    createUILabel("ShieldActive:", 20, 110, "isShieldActive", 100, 110);
+
+    createUILabel("MagicActive:", 20, 130, "isMagicActive", 100, 130);
+
+    // เพิ่มองค์ประกอบทั้งหมดใน GameScene
+    FXGL.getGameScene().addUINode(playerHPLabel);
+    FXGL.getGameScene().addUINode(playerHPBar);
+    FXGL.getGameScene().addUINode(playerHPValue);
+
     }
 
     private void createUILabel(String label, double labelX, double labelY, String property, double valueX,
