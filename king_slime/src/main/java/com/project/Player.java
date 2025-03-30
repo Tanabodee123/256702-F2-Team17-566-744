@@ -1,6 +1,5 @@
 package com.project;
 
-import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -8,7 +7,6 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
-import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 
@@ -95,8 +93,6 @@ public class Player {
         }
     }
     
-    
-
     public void setSpeed(double speed) {
         this.playerSpeed = speed;
     }
@@ -113,25 +109,6 @@ public class Player {
         return facingDirection;
     }
     
-
-    public void savePlayer(DataFile data) {
-        Bundle bundle = new Bundle("playerData");
-
-        double playerX = player.getTransformComponent().getX();
-        double playerY = player.getTransformComponent().getY();
-        bundle.put("playerX", playerX);
-        bundle.put("playerY", playerY);
-
-        data.putBundle(bundle);
-    }
-
-    public void loadPlayer(DataFile data) {
-        Bundle bundle = data.getBundle("playerData");
-
-        double playerX = bundle.get("playerX");
-        double playerY = bundle.get("playerY");
-        player.getTransformComponent().setPosition(playerX, playerY);
-    }
     public void dash() {
         if (!canDash || isDashing) return; // ถ้าแดชไม่ได้หรือกำลังแดชอยู่ ให้หยุดการทำงาน
     
@@ -141,7 +118,7 @@ public class Player {
         // เพิ่มความเร็วชั่วคราวในการแดช
         PhysicsComponent physics = player.getComponent(PhysicsComponent.class);
         // คูณด้วย 60 เพื่อให้เห็นการพุ่งชัดเจน (ปรับได้ตามต้องการ)
-        Point2D dashVelocity = facingDirection.normalize().multiply(dashSpeed * 600);
+        Point2D dashVelocity = facingDirection.normalize().multiply(dashSpeed * 3600);
         physics.setLinearVelocity(dashVelocity);
     
         // ตั้งสถานะอมตะ (ปิดการชน)

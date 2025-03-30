@@ -94,8 +94,9 @@ public class App extends GameApplication {
         }, Duration.seconds(10));
 
         FXGL.getWorldProperties().<Integer>addListener("score", (oldValue, newValue) -> {
-            if (newValue >= 5 && !FXGL.getb("isBossAlive")) {
+            if (newValue >= 500 && !FXGL.getb("isBossAlive")) {
                 boss.spawnBoss();
+                FXGL.set("isBossAlive", true);
             }
         });
 
@@ -114,8 +115,6 @@ public class App extends GameApplication {
             dx += 1;
         player.movePlayer(dx, dy);
     }
-
-  
 
     @Override
     protected void initInput() {
@@ -192,7 +191,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("playerHP", 10000000);
+        vars.put("playerHP", 100);
         vars.put("score", 0);
         vars.put("enemyCount", 3);
         vars.put("potionTime", 0);

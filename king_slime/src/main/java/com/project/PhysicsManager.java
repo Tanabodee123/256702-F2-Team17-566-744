@@ -85,7 +85,7 @@ public class PhysicsManager {
                 FXGL.set("potionTime", potionTimer);
 
                 if (potionTimer <= 0) {
-                    this.player.setSpeed(2.5);
+                    this.player.setSpeed(3.0);
                 }
             }, Duration.seconds(1), 5);
         }

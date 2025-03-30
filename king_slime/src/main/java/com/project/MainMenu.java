@@ -79,7 +79,7 @@ public class MainMenu extends FXGLMenu {
 
         Text settingsTitle = new Text("Game Info");
         settingsTitle.setFont(Font.font("Arial", 36));
-        settingsTitle.setFill(Color.BLACK);
+        settingsTitle.setFill(Color.WHITE);
 
         Button btnGameplay = new Button("Item Info");
         btnGameplay.setOnAction(e -> showGameplayInfo());
@@ -98,13 +98,13 @@ public class MainMenu extends FXGLMenu {
                 "-fx-font-size: 18px; -fx-padding: 10px; -fx-background-color: #f44336; -fx-text-fill: white;");
 
         settingsMenuBox.getChildren().addAll(settingsTitle, btnGameplay, btnControl, btnBack);
-        settingsMenuBox.setTranslateX((screenWidth - menuWidth) / 2);
+        settingsMenuBox.setTranslateX((screenWidth - menuWidth-35) / 2);
         settingsMenuBox.setTranslateY((screenHeight - menuHeight) / 2);
     }
 
     private void showSettingsMenu() {
         getContentRoot().getChildren().clear();
-        getContentRoot().getChildren().add(settingsMenuBox);
+        getContentRoot().getChildren().addAll(background,settingsMenuBox);
     }
 
     private void showMainMenu() {

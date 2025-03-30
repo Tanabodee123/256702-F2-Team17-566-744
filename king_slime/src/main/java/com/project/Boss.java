@@ -16,7 +16,7 @@ import javafx.util.Duration;
 
 public class Boss {
     private Entity boss;
-    private int bossHP = 1000; // HP ของบอส
+    private int bossHP = 500; // HP ของบอส
     private AnimationChannel BossIdle, Bossattack;
     private AnimatedTexture texture;
     private boolean isAttacking = false; // ป้องกันการยิงรัว
@@ -46,7 +46,6 @@ public class Boss {
                 .buildAndAttach();
 
             FXGL.getWorldProperties().setValue("bossHP", bossHP);
-            FXGL.getWorldProperties().setValue("maxBossHP", 1000);
                 texture.loopAnimationChannel(BossIdle);
 
                 startBossBehavior();
@@ -108,10 +107,10 @@ public class Boss {
         if (bossHP <= 0) {
             FXGL.showMessage("Boss Defeated! 🎉");
             boss.removeFromWorld();
+            FXGL.inc("score", 500);
             isBossAlive = false;
         }
     }
-    
 
     public boolean isBossAlive() {
         return isBossAlive;
