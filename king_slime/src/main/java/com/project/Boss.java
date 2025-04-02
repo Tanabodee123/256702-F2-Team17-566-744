@@ -46,7 +46,7 @@ public class Boss {
                 .buildAndAttach();
 
             FXGL.getWorldProperties().setValue("bossHP", bossHP);
-            FXGL.getWorldProperties().setValue("maxBossHP", 1000);
+            FXGL.getWorldProperties().setValue("maxBossHP", 500);
                 texture.loopAnimationChannel(BossIdle);
 
                 startBossBehavior();

@@ -74,34 +74,36 @@ public class PhysicsManager {
         if (player.getPosition().distance(potion.getPosition()) < 30) {
             FXGL.play("itempickup.wav");
             potion.removeFromWorld();
-
-            if (potionTimer == 0) {
+    
+            if (potionTimer == 0) { // ใช้ยาครั้งแรก เพิ่มความเร็ว
                 double newSpeed = Math.min(this.player.getSpeed() + 2.5, maxSpeed);
                 this.player.setSpeed(newSpeed);
             }
-
-            potionTimer += 5;
+    
+            potionTimer += 5; // เพิ่มเวลา
             FXGL.set("potionTime", potionTimer);
-
-            if (!isPotionTimerRunning) {
+    
+            if (!isPotionTimerRunning) { // เริ่ม Timer ถ้ายังไม่ทำงาน
                 isPotionTimerRunning = true;
                 startPotionTimer();
             }
         }
     }
-
+    
     private void startPotionTimer() {
-        FXGL.getGameTimer().runAtInterval(() -> {
-            if (potionTimer > 0) {
+        if (potionTimer > 0) {
+            FXGL.getGameTimer().runOnceAfter(() -> {
                 potionTimer--;
                 FXGL.set("potionTime", potionTimer);
-            }
     
-            if (potionTimer <= 0) {
-                this.player.setSpeed(3.0);
-                isPotionTimerRunning = false;
-            }
-        }, Duration.seconds(1));
+                if (potionTimer > 0) {
+                    startPotionTimer(); // เรียกตัวเองใหม่แบบ Loop (แทน runAtInterval)
+                } else {
+                    this.player.setSpeed(3.0); // รีเซ็ตความเร็วเมื่อหมดเวลา
+                    isPotionTimerRunning = false;
+                }
+            }, Duration.seconds(1));
+        }
     }
 
     private void Meat(Entity player, Entity meat) {
@@ -135,10 +137,11 @@ public class PhysicsManager {
             FXGL.play("itempickup.wav");
             magic.removeFromWorld();
             isMagicActive = true;
-            magicTimer += 5;
+            
+            // อัปเดต magicTimer แต่ไม่ต้องเริ่ม Timer ใหม่ถ้ามันกำลังทำงานอยู่
+            magicTimer = 10;
             FXGL.set("magicTime", magicTimer);
     
-            
             if (!isMagicTimerRunning) {
                 FXGL.set("isMagicActive", true);
                 isMagicTimerRunning = true;
@@ -146,15 +149,14 @@ public class PhysicsManager {
             }
         }
     }
-
+    
     private void startMagicTimer() {
-        FXGL.getGameTimer().runAtInterval(() -> {
+        FXGL.getGameTimer().runOnceAfter(() -> {
             if (magicTimer > 0) {
                 magicTimer--;
                 FXGL.set("magicTime", magicTimer);
-            }
-    
-            if (magicTimer <= 0) {
+                startMagicTimer(); // เรียกตัวเองใหม่แบบ Loop (แทน runAtInterval)
+            } else {
                 FXGL.set("isMagicActive", false);
                 isMagicActive = false;
                 isMagicTimerRunning = false;
